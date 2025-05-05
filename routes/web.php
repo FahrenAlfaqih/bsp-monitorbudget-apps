@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth/login');
 });
 
 Route::middleware('auth')->group(function () {
@@ -53,7 +53,7 @@ Route::middleware(['auth', 'role:admindept_hcm'])->group(function () {
     Route::post('/spd/ajukan', [SpdController::class, 'ajukan'])->name('spd.ajukan');
 
     Route::resource('dpd', DpdController::class);
-    
+
     Route::get('/pegawai', [PegawaiController::class, 'index'])->name('pegawai.index');
     Route::get('/pegawai/create', [PegawaiController::class, 'create'])->name('pegawai.create');
     Route::post('/pegawai', [PegawaiController::class, 'store'])->name('pegawai.store');

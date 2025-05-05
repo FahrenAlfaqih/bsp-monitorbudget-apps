@@ -50,7 +50,10 @@
                             @foreach ($spds as $spd)
                             <tr class="border-b hover:bg-gray-50 transition duration-300">
                                 <td class="py-3 px-4 text-sm">
+                                    @if($spd->status === 'menunggu' || $spd->status === 'ditolak')
                                     <input type="checkbox" name="spd_ids[]" value="{{ $spd->id }}" class="form-checkbox h-4 w-4 text-blue-600">
+                                    @endif
+
                                 </td>
                                 <td class="py-3 px-4 text-sm">{{ $spd->nomor_spd }}</td>
                                 <td class="py-3 px-4 text-sm">{{ $spd->nama_pegawai }}</td>

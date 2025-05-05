@@ -20,7 +20,7 @@
                             </option>
                             @endforeach
                         </select>
-                    </div>  
+                    </div>
 
                     <div class="flex flex-col w-full sm:w-auto">
                         <label for="departemenSelect" class="text-sm font-semibold text-gray-700 mb-2">Filter Departemen:</label>
@@ -79,7 +79,17 @@
                             </td>
                             <td class="py-3 px-4 text-sm">
                                 @if(auth()->user()->role === 'admindept')
-                                <a href="{{ route('rancangan.edit', $r->id) }}" class="text-blue-500 hover:text-blue-700">Edit</a>
+                                @if($r->status === 'disetujui')
+                                <button class="inline-block px-3 py-1 text-sm bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed" disabled>
+                                    Edit
+                                </button>
+                                @else
+                                <a href="{{ route('rancangan.edit', $r->id) }}"
+                                    class="inline-block px-3 py-1 text-sm text-white bg-yellow-500 hover:bg-yellow-600 rounded-lg transition">
+                                    Edit
+                                </a>
+                                @endif
+
                                 @elseif(auth()->user()->role === 'tmhcm')
                                 <form action="{{ route('rancangan.updateStatus', $r->id) }}" method="POST" class="flex flex-col sm:flex-row items-center gap-2">
                                     @csrf

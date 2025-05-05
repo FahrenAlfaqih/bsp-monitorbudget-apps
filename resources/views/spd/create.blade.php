@@ -27,18 +27,6 @@
                             </select>
                         </div>
 
-                        <!-- {{-- Nama Pegawai --}}
-                        <div>
-                            <label for="user_id" class="block text-sm font-medium text-gray-700 mb-1">Nama Pegawai</label>
-                            <select name="user_id" id="user_id" required
-                                class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">Pilih Pegawai</option>
-                                @foreach($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                @endforeach
-                            </select>
-                        </div> -->
-
                         {{-- Nomor SPD --}}
                         <div>
                             <label for="nomor_spd" class="block text-sm font-medium text-gray-700 mb-1">Nomor SPD</label>
