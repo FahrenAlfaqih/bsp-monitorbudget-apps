@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Departemen;
 use App\Models\Dpd;
+use App\Models\Pegawai;
 use App\Models\Spd;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -90,8 +91,9 @@ class SpdController extends Controller
     {
         $departemen = Departemen::all();
         $users = User::all();
+        $pegawais = Pegawai::all();
 
-        return view('spd.create', compact('departemen', 'users'));
+        return view('spd.create', compact('departemen', 'users', 'pegawais'));
     }
 
 
@@ -99,8 +101,8 @@ class SpdController extends Controller
     {
         $validated = $request->validate([
             'departemen_id' => 'required|exists:departemen,id',
+            'pegawai_id' => 'required|exists:pegawai,id',
             'nomor_spd' => 'required|unique:surat_perjalanan_dinas,nomor_spd',
-            'nama_pegawai' => 'required|string|max:255',
             'asal' => 'required|string|max:255',
             'tujuan' => 'required|string|max:255',
             'kegiatan' => 'nullable|string',
@@ -110,11 +112,14 @@ class SpdController extends Controller
             'nama_transport' => 'nullable|string',
         ]);
 
+        $pegawai = Pegawai::find($validated['pegawai_id']);
+
         Spd::create([
             'departemen_id' => $validated['departemen_id'],
+            'pegawai_id' => $pegawai->id,
             'user_id' => Auth::id(),
             'nomor_spd' => $validated['nomor_spd'],
-            'nama_pegawai' => $validated['nama_pegawai'],
+            'nama_pegawai' => $pegawai->nama_pegawai, 
             'asal' => $validated['asal'],
             'tujuan' => $validated['tujuan'],
             'kegiatan' => $validated['kegiatan'],

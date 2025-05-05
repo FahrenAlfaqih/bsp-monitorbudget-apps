@@ -13,6 +13,7 @@ class Spd extends Model
     protected $fillable = [
         'departemen_id',
         'user_id',
+        'pegawai_id',
         'nomor_spd',
         'nama_pegawai',
         'asal',
@@ -34,5 +35,10 @@ class Spd extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function pegawai()
+    {
+        return $this->belongsTo(Pegawai::class);
     }
 }

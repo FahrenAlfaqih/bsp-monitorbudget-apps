@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
@@ -63,6 +64,12 @@
                         class="w-full px-4 py-2 text-left rounded-md 
                        {{ request()->routeIs('departemen.index') ? 'bg-blue-500 text-white' : 'text-gray-700' }}">
                         Data Departemen
+                    </x-nav-link>
+                    <x-nav-link :href="route('pegawai.index')"
+                        :active="request()->routeIs('pegawai.index')"
+                        class="w-full px-4 py-2 text-left rounded-md 
+                       {{ request()->routeIs('pegawai.index') ? 'bg-blue-500 text-white' : 'text-gray-700' }}">
+                        Data Pegawai
                     </x-nav-link>
                     <x-nav-link :href="route('rancangan.index')"
                         :active="request()->routeIs('rancangan.index')"

@@ -48,10 +48,15 @@
 
                         {{-- Nama Pegawai --}}
                         <div>
-                            <label for="nama_pegawai" class="block text-sm font-medium text-gray-700 mb-1">Nama Pegawai</label>
-                            <input type="text" name="nama_pegawai" id="nama_pegawai" required
-                                class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <label for="pegawai_id" class="block text-sm font-medium text-gray-700 mb-1">Nama Pegawai</label>
+                            <select name="pegawai_id" id="pegawai_id" class="w-full select2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                                <option value="">-- Pilih Pegawai --</option>
+                                @foreach($pegawais as $pegawai)
+                                <option value="{{ $pegawai->id }}">{{ $pegawai->nama_pegawai }} </option>
+                                @endforeach
+                            </select>
                         </div>
+
 
                         {{-- Asal --}}
                         <div>
@@ -123,4 +128,21 @@
             </div>
         </div>
     </div>
+
+    @push('styles')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    @endpush
+
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({
+                placeholder: "Cari pegawai...",
+                allowClear: true
+            });
+        });
+    </script>
+    @endpush
+
 </x-app-layout>

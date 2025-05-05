@@ -54,15 +54,8 @@
                                 <!-- Aksi berdasarkan status SPD -->
                                 @if($spd->status == 'diajukan')
                                 <a href="{{ route('spd.editStatus', $spd->id) }}" class="inline-block px-6 py-2.5 text-white bg-blue-600 hover:bg-blue-700 font-medium text-sm rounded-lg shadow-md transition">
-                                    Setujui
+                                    Edit Status
                                 </a>
-                                <form action="{{ route('spd.updateStatus', $spd->id) }}" method="POST" class="inline-block">
-                                    @csrf
-                                    <input type="hidden" name="status" value="ditolak">
-                                    <button type="submit" class="inline-block px-4 py-2 text-sm bg-red-500 text-white rounded-md hover:bg-red-600">
-                                        Tolak
-                                    </button>
-                                </form>
                                 @elseif($spd->status == 'disetujui')
                                 <a href="{{ route('dpd.create', ['spd' => $spd->id]) }}" class="inline-block px-4 py-2 text-sm bg-green-500 text-white rounded-md hover:bg-green-600">
                                     Buat DPD

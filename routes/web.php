@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminDeptController;
 use App\Http\Controllers\DepartemenController;
 use App\Http\Controllers\DpdController;
+use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PeriodeAnggaranController;
 use App\Http\Controllers\RancanganAnggaranController;
 use App\Http\Controllers\ProfileController;
@@ -53,6 +54,13 @@ Route::middleware(['auth', 'role:admindept_hcm'])->group(function () {
 
     Route::resource('dpd', DpdController::class);
     Route::resource('departemen', DepartemenController::class);
+
+
+    Route::get('/pegawai', [PegawaiController::class, 'index'])->name('pegawai.index');
+    Route::get('/pegawai/create', [PegawaiController::class, 'create'])->name('pegawai.create');
+    Route::post('/pegawai', [PegawaiController::class, 'store'])->name('pegawai.store');
+    Route::get('/pegawai/{pegawai}/edit', [PegawaiController::class, 'edit'])->name('pegawai.edit');
+    Route::put('/pegawai/{pegawai}', [PegawaiController::class, 'update'])->name('pegawai.update');
 });
 
 Route::middleware(['auth', 'role:admindept'])->group(function () {
