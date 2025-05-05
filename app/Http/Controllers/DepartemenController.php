@@ -48,4 +48,21 @@ class DepartemenController extends Controller
 
         return redirect()->route('departemen.index')->with('success', 'Departemen berhasil ditambahkan');
     }
+
+    public function edit(Departemen $departemen)
+    {
+        return view('departemen.edit', compact('departemen'));
+    }
+
+    public function update(Request $request, Departemen $departemen)
+    {
+        $validated = $request->validate([
+            'nama' => 'required|string|unique:departemen,nama,' . $departemen->id,
+            'bs_number' => 'required|string|max:255',
+        ]);
+
+        $departemen->update($validated);
+
+        return redirect()->route('departemen.index')->with('success', 'Data Departemen berhasil diperbarui.');
+    }
 }

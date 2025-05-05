@@ -53,14 +53,18 @@ Route::middleware(['auth', 'role:admindept_hcm'])->group(function () {
     Route::post('/spd/ajukan', [SpdController::class, 'ajukan'])->name('spd.ajukan');
 
     Route::resource('dpd', DpdController::class);
-    Route::resource('departemen', DepartemenController::class);
-
-
+    
     Route::get('/pegawai', [PegawaiController::class, 'index'])->name('pegawai.index');
     Route::get('/pegawai/create', [PegawaiController::class, 'create'])->name('pegawai.create');
     Route::post('/pegawai', [PegawaiController::class, 'store'])->name('pegawai.store');
     Route::get('/pegawai/{pegawai}/edit', [PegawaiController::class, 'edit'])->name('pegawai.edit');
     Route::put('/pegawai/{pegawai}', [PegawaiController::class, 'update'])->name('pegawai.update');
+
+    Route::get('/departemen', [DepartemenController::class, 'index'])->name('departemen.index');
+    Route::get('/departemen/create', [DepartemenController::class, 'create'])->name('departemen.create');
+    Route::post('/departemen', [DepartemenController::class, 'store'])->name('departemen.store');
+    Route::get('/departemen/{departemen}/edit', [DepartemenController::class, 'edit'])->name('departemen.edit');
+    Route::put('/departemen/{departemen}', [DepartemenController::class, 'update'])->name('departemen.update');
 });
 
 Route::middleware(['auth', 'role:admindept'])->group(function () {

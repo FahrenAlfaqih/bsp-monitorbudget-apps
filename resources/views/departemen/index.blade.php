@@ -32,8 +32,14 @@
                             <td class="py-3 px-4 text-sm">{{ $d->nama }}</td>
                             <td class="py-3 px-4 text-sm">{{ $d->bs_number }}</td>
                             <td class="py-3 px-4 text-sm">
-                                <a href="{{ route('departemen.edit', $d->id) }}" class="text-blue-500 hover:text-blue-700 text-xs">Edit</a>
+                                <!-- <a href="{{ route('departemen.edit', $d->id) }}" class="text-blue-500 hover:text-blue-700 text-xs">Edit</a> -->
+                                <a href="{{ route('departemen.edit', $d->id) }}"
+                                    class="inline-block px-3 py-1 text-sm text-white bg-yellow-500 hover:bg-yellow-600 rounded-lg transition">
+                                    Edit
+                                </a>
                             </td>
+
+
                         </tr>
                         @endforeach
                     </tbody>
