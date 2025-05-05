@@ -86,8 +86,6 @@ class SpdController extends Controller
 
 
 
-
-
     public function create()
     {
         $departemen = Departemen::all();

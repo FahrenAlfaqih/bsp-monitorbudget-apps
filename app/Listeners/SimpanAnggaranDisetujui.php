@@ -10,7 +10,8 @@ use Illuminate\Queue\InteractsWithQueue;
 class SimpanAnggaranDisetujui
 {
     /**
-     * Handle the event.
+     * @desc Event handler atau trigger ketika status dari rancangan anggaran disetujui maka data jumlah anggaran, departemen id
+     * periode id dan jumlah anggaran akan disimpan ke table anggaran fix
      *
      * @param  \App\Events\AnggaranDisetujui  $event
      * @return void
