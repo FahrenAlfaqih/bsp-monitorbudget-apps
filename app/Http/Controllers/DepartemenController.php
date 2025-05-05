@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Hash;
 
 class DepartemenController extends Controller
 {
+    /**
+     * @desc fungsi index untuk mengambil data Departemen
+     * @return void mengirim data departemen ke views departemen/index
+     */
     public function index()
     {
         $departemen = Departemen::with('user')->get();
@@ -16,11 +20,22 @@ class DepartemenController extends Controller
         return view('departemen.index', compact('departemen'));
     }
 
+    /**
+     * @desc fungsi ini berfungsi untuk mengarahkan ke halaman create departemen data
+     * @return void akan return ke views/departemen/create
+     */
     public function create()
     {
         return view('departemen.create');
     }
 
+    /**
+     * @desc fungsi ini untuk menyimpan data yang diterima dari halaman departemen.create dan sekaligus menyimpan data users, ketika menyimpan departemen maka otomatis 
+     * menyimpannya sebagai user, sehingga user tersebut bisa login sebagai admin departemen
+     *
+     * @param Request $request
+     * @return void
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -49,11 +64,23 @@ class DepartemenController extends Controller
         return redirect()->route('departemen.index')->with('success', 'Departemen berhasil ditambahkan');
     }
 
+    /**
+     * @desc fungsi ini untuk mengarahkan ke halaman departemen.edit dan mengirim data dari departemen yang ingin diedit
+     *
+     * @param Departemen $departemen
+     * @return void
+     */
     public function edit(Departemen $departemen)
     {
         return view('departemen.edit', compact('departemen'));
     }
 
+    /**
+     * @desc fungsi update ini untuk mengupdate data departemen
+     * @param Request $request
+     * @param Departemen $departemen untuk nantinya mengambil departemen id
+     * @return void
+     */
     public function update(Request $request, Departemen $departemen)
     {
         $validated = $request->validate([

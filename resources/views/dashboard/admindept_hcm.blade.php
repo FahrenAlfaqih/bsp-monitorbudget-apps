@@ -82,7 +82,10 @@
                 loop: true,
                 delay: 75,
             });
-            typewriter.typeString('Selamat datang, {{ auth()->user()->name }}!')
+            typewriter
+                .typeString('Selamat datang, {{ auth()->user()->name }}!')
+                .pauseFor(5000)
+                .deleteAll()
                 .start();
         </script>
 

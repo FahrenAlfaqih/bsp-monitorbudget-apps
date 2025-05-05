@@ -8,9 +8,27 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <p id="welcomeText" class="mb-4">Selamat datang, {{ auth()->user()->name }}</p>
-
+            <form method="GET" action="{{ route('dashboard.tmhcm') }}" class="mb-6 flex items-center gap-4">
+                <label for="periode_id" class="text-sm font-medium text-gray-700">Filter Periode:</label>
+                <select name="periode_id" id="periode_id"
+                    class="border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">-- Semua Periode --</option>
+                    @foreach($periodes as $periode)
+                    <option value="{{ $periode->id }}" {{ request('periode_id') == $periode->id ? 'selected' : '' }}>
+                        {{ $periode->nama_periode }}
+                    </option>
+                    @endforeach
+                </select>
+                <button type="submit"
+                    class="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow">
+                    Tampilkan
+                </button>
+            </form>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                 <!-- Card Karyawan -->
+
+
+
                 <div class="bg-white shadow-xl rounded-2xl p-6">
                     <h2 class="text-xl font-bold mb-4 text-blue-600">Top 10 Pegawai</h2>
                     <ul class="space-y-2">

@@ -27,6 +27,19 @@
                             </select>
                         </div>
 
+                        {{-- Periode --}}
+                        <div>
+                            <label for="periode_id" class="block text-sm font-medium text-gray-700 mb-1">Periode</label>
+                            <select name="periode_id" id="periode_id" required
+                                class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900">
+                                <option value="">Pilih Periode</option>
+                                @foreach($periodes as $periode)
+                                <option value="{{ $periode->id }}">{{ $periode->nama_periode }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+
                         {{-- Nomor SPD --}}
                         <div>
                             <label for="nomor_spd" class="block text-sm font-medium text-gray-700 mb-1">Nomor SPD</label>

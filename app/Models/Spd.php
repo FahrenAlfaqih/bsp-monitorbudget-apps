@@ -12,6 +12,7 @@ class Spd extends Model
     protected $table = 'surat_perjalanan_dinas';
     protected $fillable = [
         'departemen_id',
+        'periode_id',
         'user_id',
         'pegawai_id',
         'nomor_spd',
@@ -40,5 +41,9 @@ class Spd extends Model
     public function pegawai()
     {
         return $this->belongsTo(Pegawai::class);
+    }
+    public function periode()
+    {
+        return $this->belongsTo(PeriodeAnggaran::class, 'periode_id');
     }
 }
