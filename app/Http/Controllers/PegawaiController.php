@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pegawai;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PegawaiController extends Controller
 {
@@ -18,17 +19,31 @@ class PegawaiController extends Controller
         return view('pegawai.create');
     }
 
+    /**
+     * @desc fungsi untuk menyimpan data pegawai dan menyimpan log sebagai proses debugging
+     *
+     * @param Request $request
+     * @return void
+     */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'nopekerja' => 'required|string|max:50|unique:pegawai,nopekerja',
-            'nama_pegawai' => 'required|string|max:255',
-            'email' => 'required|email|unique:pegawai,email',
-        ]);
+        Log::info('Masuk ke PegawaiController@store', $request->all());
 
-        Pegawai::create($validated);
+        try {
+            $validated = $request->validate([
+                'nopekerja' => 'required|string|max:50|unique:pegawai,nopekerja',
+                'nama_pegawai' => 'required|string|max:255',
+                'email' => 'required|email|unique:pegawai,email',
+            ]);
 
-        return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil ditambahkan.');
+            $pegawai = Pegawai::create($validated);
+            Log::info('Pegawai berhasil dibuat:', $pegawai->toArray());
+
+            return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            Log::error('Gagal menyimpan pegawai: ' . $e->getMessage());
+            return back()->withErrors('Terjadi kesalahan saat menyimpan data.')->withInput();
+        }
     }
 
     public function edit(Pegawai $pegawai)
@@ -38,14 +53,22 @@ class PegawaiController extends Controller
 
     public function update(Request $request, Pegawai $pegawai)
     {
-        $validated = $request->validate([
-            'nopekerja' => 'required|string|unique:pegawai,nopekerja,' . $pegawai->id,
-            'nama_pegawai' => 'required|string|max:255',
-            'email' => 'nullable|string|max:255',
-        ]);
+        Log::info('Masuk ke update:', ['pegawai_id' => $pegawai->id]);
 
-        $pegawai->update($validated);
+        try {
+            $validated = $request->validate([
+                'nopekerja' => 'required|string|unique:pegawai,nopekerja,' . $pegawai->id,
+                'nama_pegawai' => 'required|string|max:255',
+                'email' => 'nullable|string|max:255',
+            ]);
 
-        return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil diperbarui.');
+            $pegawai->update($validated);
+            Log::info('Data pegawai berhasil diperbarui:', $pegawai->toArray());
+
+            return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil diperbarui.');
+        } catch (\Exception $e) {
+            Log::error('Gagal update pegawai: ' . $e->getMessage());
+            return back()->withErrors('Terjadi kesalahan saat memperbarui data.')->withInput();
+        }
     }
 }
