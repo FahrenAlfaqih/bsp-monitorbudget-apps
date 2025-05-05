@@ -1,4 +1,4 @@
-# 📊 Sistem Pengelol Anggaran Perjalanan Dinas
+# 📊 Sistem Pengelola Anggaran Perjalanan Dinas
 
 Sistem ini dikembangkan untuk membantu Departemen HCM dalam memonitor dan merekap anggaran perjalanan dinas (SPD) serta DPD (Deklarasi Perjalanan Dinas). Sistem ini memungkinkan pengelolaan data perjalanan dinas, status pengajuan, penerbitan DPD dari Finance, dan pembuatan laporan Excel untuk keperluan rekapitulasi.
 
