@@ -74,17 +74,13 @@ class RancanganAnggaranController extends Controller
             'status' => 'required|in:menunggu,disetujui,ditolak',
             'catatan' => 'nullable|string'
         ]);
-    
+
         $rancangan = RancanganAnggaran::findOrFail($id);
-        $rancangan->status = 'disetujui'; 
-        $rancangan->save();
-        event(new AnggaranDisetujui($rancangan));
         $rancangan->update([
             'status' => $request->status,
             'catatan' => $request->catatan
         ]);
-    
+
         return redirect()->route('rancangan.index')->with('success', 'Status berhasil diperbarui.');
     }
-    
 }

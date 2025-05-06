@@ -10,8 +10,10 @@ use Illuminate\Support\Facades\Hash;
 class DepartemenController extends Controller
 {
     /**
-     * @desc fungsi index untuk mengambil data Departemen
-     * @return void mengirim data departemen ke views departemen/index
+     * Menampilkan data departemen.
+     *
+     * @desc Mengambil data departemen beserta relasi user yang terkait.
+     * @return \Illuminate\View\View Mengembalikan view dengan data departemen.
      */
     public function index()
     {
@@ -21,8 +23,10 @@ class DepartemenController extends Controller
     }
 
     /**
-     * @desc fungsi ini berfungsi untuk mengarahkan ke halaman create departemen data
-     * @return void akan return ke views/departemen/create
+     * Menampilkan halaman untuk membuat departemen baru.
+     *
+     * @desc Menampilkan form untuk membuat departemen baru.
+     * @return \Illuminate\View\View Mengembalikan view untuk form create departemen.
      */
     public function create()
     {
@@ -30,11 +34,11 @@ class DepartemenController extends Controller
     }
 
     /**
-     * @desc fungsi ini untuk menyimpan data yang diterima dari halaman departemen.create dan sekaligus menyimpan data users, ketika menyimpan departemen maka otomatis 
-     * menyimpannya sebagai user, sehingga user tersebut bisa login sebagai admin departemen
+     * Menyimpan data departemen beserta user terkait.
      *
-     * @param Request $request
-     * @return void
+     * @desc Menyimpan data departemen dan membuat user baru dengan role 'admindept'.
+     * @param \Illuminate\Http\Request $request Data yang diterima untuk disimpan.
+     * @return \Illuminate\Http\RedirectResponse Mengarahkan kembali ke halaman index departemen.
      */
     public function store(Request $request)
     {
@@ -45,7 +49,7 @@ class DepartemenController extends Controller
             'bs_number' => 'required',
         ]);
 
-        // Simpan ke users
+        // Simpan ke tabel users
         $user = User::create([
             'name' => $request->nama,
             'email' => $request->email,
@@ -53,6 +57,7 @@ class DepartemenController extends Controller
             'role' => 'admindept',
         ]);
 
+        // Simpan ke tabel departemen
         Departemen::create([
             'user_id' => $user->id,
             'bs_number' => $request->bs_number,
@@ -60,15 +65,15 @@ class DepartemenController extends Controller
             'email' => $request->email,
         ]);
 
-
         return redirect()->route('departemen.index')->with('success', 'Departemen berhasil ditambahkan');
     }
 
     /**
-     * @desc fungsi ini untuk mengarahkan ke halaman departemen.edit dan mengirim data dari departemen yang ingin diedit
+     * Menampilkan halaman untuk mengedit data departemen.
      *
-     * @param Departemen $departemen
-     * @return void
+     * @desc Menampilkan form untuk mengedit departemen dengan data yang sudah ada.
+     * @param \App\Models\Departemen $departemen Departemen yang akan diedit.
+     * @return \Illuminate\View\View Mengembalikan view untuk form edit departemen.
      */
     public function edit(Departemen $departemen)
     {
@@ -76,10 +81,12 @@ class DepartemenController extends Controller
     }
 
     /**
-     * @desc fungsi update ini untuk mengupdate data departemen
-     * @param Request $request
-     * @param Departemen $departemen untuk nantinya mengambil departemen id
-     * @return void
+     * Mengupdate data departemen.
+     *
+     * @desc Mengupdate data departemen berdasarkan data yang diberikan.
+     * @param \Illuminate\Http\Request $request Data yang diterima untuk diupdate.
+     * @param \App\Models\Departemen $departemen Departemen yang akan diupdate.
+     * @return \Illuminate\Http\RedirectResponse Mengarahkan kembali ke halaman index departemen.
      */
     public function update(Request $request, Departemen $departemen)
     {

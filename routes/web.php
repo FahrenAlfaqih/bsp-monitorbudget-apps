@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminDeptController;
+use App\Http\Controllers\AnggaranController;
 use App\Http\Controllers\DepartemenController;
 use App\Http\Controllers\DpdController;
 use App\Http\Controllers\PegawaiController;
@@ -84,6 +85,8 @@ Route::middleware(['auth', 'role:tmhcm'])->group(function () {
 
 
 Route::middleware(['auth'])->get('rancangan', [RancanganAnggaranController::class, 'index'])->name('rancangan.index');
+
+Route::get('/anggaran/total/{departemen_id}/{periode_id}', [AnggaranController::class, 'getTotalAnggaran']);
 
 
 
