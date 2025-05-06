@@ -16,6 +16,17 @@ use Illuminate\Support\Facades\DB;
  */
 class AdminDeptController extends Controller
 {
+    /**
+     * @desc fungsi ini untuk memanggil view v_surat_perjalanan untuk menampilkan data surat perjalanan dinas yang berelasi dan dilakukan join dari table spd ke tabel 
+     * departemen dan table periode anggaran
+     *
+     * @return void
+     */
+    public function index()
+    {
+        $data = DB::table('v_surat_perjalanan')->get(); 
+        return view('dashboard.admindept', compact('data')); 
+    }
 
     /**
      * @desc fungsi ini untuk mengirim data terkait kebutuhan di dashboard Admin Departemen
