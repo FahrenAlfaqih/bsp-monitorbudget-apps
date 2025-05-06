@@ -70,6 +70,7 @@ Route::middleware(['auth', 'role:admindept_hcm'])->group(function () {
 
 Route::middleware(['auth', 'role:admindept'])->group(function () {
     Route::get('/dashboard/admindept', [AdminDeptController::class, 'dashboard'])->name('dashboard.admindept');
+
 });
 
 

@@ -17,18 +17,6 @@ use Illuminate\Support\Facades\DB;
 class AdminDeptController extends Controller
 {
     /**
-     * @desc fungsi ini untuk memanggil view v_surat_perjalanan untuk menampilkan data surat perjalanan dinas yang berelasi dan dilakukan join dari table spd ke tabel 
-     * departemen dan table periode anggaran
-     *
-     * @return void
-     */
-    public function index()
-    {
-        $data = DB::table('v_surat_perjalanan')->get(); 
-        return view('dashboard.admindept', compact('data')); 
-    }
-
-    /**
      * @desc fungsi ini untuk mengirim data terkait kebutuhan di dashboard Admin Departemen
      * @param Request request dari link url, yakni ada periode_id, digunakan ketika ingin memfilter periode
      * @return void akan mengembalikan data data variabel ke views dashboard/admindept
@@ -118,13 +106,20 @@ class AdminDeptController extends Controller
 
         PeriodeAnggaran::autoUpdateStatus();
 
+        $departemen_id = auth()->user()->departemen_id;
+    
+        $data = DB::table('v_surat_perjalanan')
+            ->where('departemen_id', $departemen_id)
+            ->get();
+
         return view('dashboard.admindept', [
             'rancangan' => $rancangan,
             'periodeTerpilih' => $periodeTerpilih,
             'semuaPeriode' => $semuaPeriode,
             'topKaryawan' => $topKaryawan,
             'topBudget' => $topBudget,
-            'topTujuanDinas' => $topTujuanDinas
+            'topTujuanDinas' => $topTujuanDinas,
+            'data' => $data
         ]);
     }
 

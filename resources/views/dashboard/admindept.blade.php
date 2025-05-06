@@ -124,4 +124,10 @@
             .deleteAll()
             .start();
     </script>
+
+    <script>
+        const data = @json($data);
+        console.log(data);
+    </script>
+
 </x-app-layout>
