@@ -40,7 +40,7 @@ Sistem ini dikembangkan untuk membantu Departemen HCM dalam memonitor dan mereka
 
     ```bash
     git clone https://github.com/FahrenAlFaqih/bsp-final-project.git
-    cd spd-bsp-final-project
+    cd bsp-final-project
 
     ```
 

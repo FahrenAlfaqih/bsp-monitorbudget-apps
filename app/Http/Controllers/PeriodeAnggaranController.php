@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PeriodeAnggaran;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PeriodeAnggaranController extends Controller
 {
@@ -34,6 +35,7 @@ class PeriodeAnggaranController extends Controller
             'mulai' => $request->mulai,
             'berakhir' => $request->berakhir,
             'status' => 'dibuka',
+            'user_id' => Auth::id(),
         ]);
 
         return redirect()->route('periode.index')->with('success', 'Periode anggaran berhasil dibuka');
