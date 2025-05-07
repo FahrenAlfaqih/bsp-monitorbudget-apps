@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Log;
 
 class PegawaiController extends Controller
 {
+    /**
+     * @desc ini adalah fungsi index
+     *
+     * @return void
+     */
     public function index()
     {
         $pegawais = Pegawai::all();
