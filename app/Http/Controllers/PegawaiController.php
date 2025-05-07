@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Log;
 class PegawaiController extends Controller
 {
     /**
-     * @desc ini adalah fungsi index
+     * @desc ini adalah fungsi index, untuk menampilkan
+     *  halaman index pegawai dan mengirim keseluruhan data pegawai
      *
      * @return void
      */
