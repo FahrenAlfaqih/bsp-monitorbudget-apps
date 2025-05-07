@@ -13,6 +13,11 @@ class PegawaiController extends Controller
         $pegawais = Pegawai::all();
         return view('pegawai.index', compact('pegawais'));
     }
+    public function indexTest()
+    {
+        $pegawais = Pegawai::all();
+        return view('pegawai.index', compact('pegawais'));
+    }
 
     /**
      * @desc fungsi mengembalikan halaman create pegawai jika ingin menambahkan data pegawai
