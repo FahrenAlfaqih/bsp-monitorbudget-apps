@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class DpdController extends Controller
 {
+    /**
+     * @desc ini fungsi index
+     *
+     * @return void
+     */
     public function create()
     {
         $spds = Spd::all();
