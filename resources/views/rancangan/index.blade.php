@@ -1,44 +1,29 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Rancangan Anggaran Biaya Dinas
-        </h2>
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                Rancangan Anggaran Biaya Perjalanan Dinas
+            </h2>
+        </div>
     </x-slot>
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
-        @if(Auth::user()->role === 'tmhcm')
-        <div class="bg-white p-2 shadow-lg rounded-lg mb-3">
-            <form action="{{ route('rancangan.index') }}" method="GET" class="flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 sm:gap-6 sm:mt-0">
-                <div class="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
-                    <div class="flex flex-col w-full sm:w-auto">
-                        <label for="periodeSelect" class="text-sm font-semibold text-gray-700 mb-2">Filter Periode:</label>
-                        <select id="periodeSelect" name="periode" onchange="this.form.submit()" class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out">
-                            <option value="">Semua Periode</option>
-                            @foreach($periodeList as $periode)
-                            <option value="{{ $periode->id }}" {{ request('periode') == $periode->id ? 'selected' : '' }}>
-                                {{ $periode->nama_periode }}
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="flex flex-col w-full sm:w-auto">
-                        <label for="departemenSelect" class="text-sm font-semibold text-gray-700 mb-2">Filter Departemen:</label>
-                        <select id="departemenSelect" name="departemen" onchange="this.form.submit()" class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out">
-                            <option value="">Semua Departemen</option>
-                            @foreach($departemenList as $dept)
-                            <option value="{{ $dept->id }}" {{ request('departemen') == $dept->id ? 'selected' : '' }}>
-                                {{ $dept->nama }}
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                </div>
-            </form>
+        @if(Auth::user()->role === 'admindept')
+        <!-- Panduan Pengisian Rancangan Anggaran hanya tampil untuk admin departemen -->
+        <div class="bg-gray-200 text-gray-800 p-4 mb-6 rounded-lg border border-gray-300">
+            <h4 class="font-semibold  mb-2">Pengajuan Rancangan Anggaran</h4>
+            <ul class="list-disc list-inside text-sm space-y-1">
+                <li>Tim Technical Manager HCM dan Finance akan meninjau anggaran yang diajukan untuk memastikan kecocokan dengan kebutuhan program kerja perjalanan dinas.</li>
+                <li>Setelah rancangan anggaran disetujui, anggaran yang final akan digunakan untuk program kerja perjalanan dinas dan tidak dapat diubah selama periode satu tahun ke depan.</li>
+                <li><strong>Status Anggaran:</strong>
+                    <ul class="list-disc list-inside ml-5">
+                        <li><strong>Menunggu:</strong> Anggaran sedang dilakukan peninjauan.</li>
+                        <li><strong>Disetujui:</strong> Anggaran yang disetujui akan disimpan sebagai anggaran final dan tidak bisa diubah lagi. Anggaran ini digunakan untuk program kerja perjalanan dinas selama satu tahun ke depan.</li>
+                        <li><strong>Ditolak:</strong> Anggaran yang ditolak harus diajukan ulang oleh Admin Departemen setelah melakukan revisi atau perubahan.</li>
+                    </ul>
+                </li>
+            </ul>
         </div>
-
-
         @endif
 
         <div class="bg-white p-6 shadow-md rounded-lg">

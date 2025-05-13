@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\AnggaranDisetujui;
 use App\Models\Departemen;
 use App\Models\RancanganAnggaran;
 use App\Models\PeriodeAnggaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class RancanganAnggaranController extends Controller
 {
@@ -36,13 +36,6 @@ class RancanganAnggaranController extends Controller
         return view('rancangan.index', compact('rancangan', 'periodeList', 'departemenList'));
     }
 
-    public function create(Request $request)
-    {
-        $periode = PeriodeAnggaran::all();
-        $selectedPeriodeId = $request->periode_id;
-        return view('rancangan.create', compact('periode', 'selectedPeriodeId'));
-    }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -57,16 +50,33 @@ class RancanganAnggaranController extends Controller
             'status' => 'menunggu',
         ]);
 
-        return redirect()->route('rancangan.index')->with('success', 'Pengajuan rancangan anggaran berhasil.');
+        Alert::success('Berhasil', 'Pengajuan rancangan anggaran berhasil.');
+        return redirect()->route('rancangan.index');
     }
 
     public function edit($id)
     {
         $rancangan = RancanganAnggaran::findOrFail($id);
         $periode = PeriodeAnggaran::all();
-        return view('rancangan.edit', compact('rancangan', 'periode'));
+        return view('rancangan.update', compact('rancangan', 'periode'));
     }
 
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'periode_id' => 'required|exists:periode_anggaran,id',
+            'jumlah_anggaran' => 'required|integer|min:0'
+        ]);
+
+        $rancangan = RancanganAnggaran::findOrFail($id);
+        $rancangan->update([
+            'periode_id' => $request->periode_id,
+            'jumlah_anggaran' => $request->jumlah_anggaran,
+        ]);
+
+        Alert::success('Berhasil', 'Rancangan anggaran berhasil diperbarui.');
+        return redirect()->route('rancangan.index');
+    }
 
     public function updateStatus(Request $request, $id)
     {
@@ -81,6 +91,7 @@ class RancanganAnggaranController extends Controller
             'catatan' => $request->catatan
         ]);
 
-        return redirect()->route('rancangan.index')->with('success', 'Status berhasil diperbarui.');
+        Alert::success('Berhasil', 'Status berhasil diperbarui.');
+        return redirect()->route('rancangan.index');
     }
 }

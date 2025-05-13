@@ -66,10 +66,17 @@ class AdminDeptController extends Controller
 
         $sudahMengajukan = RancanganAnggaran::where('departemen_id', $user->departemen->id)
             ->where('periode_id', $periodeTerpilih->id)
-            ->where('status', 'disetujui')
+            // ->where('status', 'disetujui')
             ->exists();
 
-        $periodeTerpilih->sudahMengajukan = $sudahMengajukan;
+        $pengajuan = RancanganAnggaran::where('departemen_id', $user->departemen->id)
+            ->where('periode_id', $periodeTerpilih->id)
+            ->latest()
+            ->first();
+
+        $periodeTerpilih->sudahMengajukan = $pengajuan ? true : false;
+        $periodeTerpilih->statusPengajuan = $pengajuan->status ?? null;
+
 
         // Data lainnya
         $topKaryawan = DB::table('deklarasi_perjalanan_dinas as d')
@@ -107,7 +114,7 @@ class AdminDeptController extends Controller
         PeriodeAnggaran::autoUpdateStatus();
 
         $departemen_id = auth()->user()->departemen_id;
-    
+
         $data = DB::table('v_surat_perjalanan')
             ->where('departemen_id', $departemen_id)
             ->get();

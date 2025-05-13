@@ -12,9 +12,9 @@ class UserSeeder extends Seeder
     public function run()
     {
         $user = User::firstOrCreate([
-            'email' => 'inung@admindept.com',
+            'email' => 'hcm@admindept.com',
         ], [
-            'name' => 'Nuraini Halik',
+            'name' => 'Human Capital Management',
             'password' => Hash::make('inunghcm'),
             'role' => 'admindept_hcm',
         ]);

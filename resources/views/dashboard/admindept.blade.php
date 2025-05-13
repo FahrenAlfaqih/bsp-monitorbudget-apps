@@ -1,8 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            PT. Bumi Siak Pusako
-        </h2>
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                PT. Bumi Siak Pusako
+            </h2>
+        </div>
     </x-slot>
 
     <div class="py-12">
@@ -28,7 +30,6 @@
                     Tampilkan
                 </button>
             </form>
-
 
             {{-- Statistik berdasarkan periodeTerpilih --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
@@ -72,43 +73,66 @@
 
 
             {{-- Informasi Periode yang dipilih --}}
-            <div class="bg-white rounded-xl shadow p-6 flex flex-col justify-between mb-6">
-                <div>
-                    <h4 class="text-lg font-bold mb-2">{{ $periodeTerpilih->nama_periode }}</h4>
-                    <p class="text-sm text-gray-600">Mulai: {{ \Carbon\Carbon::parse($periodeTerpilih->mulai)->format('d M Y') }}</p>
-                    <p class="text-sm text-gray-600">Berakhir: {{ \Carbon\Carbon::parse($periodeTerpilih->berakhir)->format('d M Y') }}</p>
-                    <p class="mt-2 text-sm">
-                        Status:
-                        <span class="inline-block px-2 py-1 rounded-full text-white 
-                            {{ $periodeTerpilih->status === 'dibuka' ? 'bg-green-500' : 'bg-red-500' }}">
-                            {{ ucfirst($periodeTerpilih->status) }}
-                        </span>
-                    </p>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white rounded-xl shadow p-6 flex flex-col justify-between mb-6">
+                    <div>
+                        <h4 class="text-lg font-bold mb-2">{{ $periodeTerpilih->nama_periode }}</h4>
+                        <p class="text-sm text-gray-600">Mulai: {{ \Carbon\Carbon::parse($periodeTerpilih->mulai)->format('d M Y') }}</p>
+                        <p class="text-sm text-gray-600">Berakhir: {{ \Carbon\Carbon::parse($periodeTerpilih->berakhir)->format('d M Y') }}</p>
+                        @if ($periodeTerpilih->sudahMengajukan)
+                        <div class="mt-2 text-sm">
+                            @if ($periodeTerpilih->statusPengajuan === 'menunggu')
+                            <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
+                                <span>
+                                    Menunggu Persetujuan
+                                </span>
+                            </p>
+                            @elseif ($periodeTerpilih->statusPengajuan === 'disetujui')
+                            <span class="px-3 py-1 text-sm">
+                                Disetujui
+                            </span>
+                            @elseif ($periodeTerpilih->statusPengajuan === 'ditolak')
+                            <span class="px-3 py-1 text-sm">
+                                Ditolak
+                            </span>
+                            @endif
+                        </div>
+                        @endif
+                        <p class="mt-2 text-sm">
+                            Status:
+                            <span class="inline-block px-2 py-1 rounded-full text-white 
+                {{ $periodeTerpilih->status === 'dibuka' ? 'bg-green-500' : 'bg-red-500' }}">
+                                {{ ucfirst($periodeTerpilih->status) }}
+                            </span>
+                        </p>
 
-                {{-- Action Buttons --}}
-                <div class="mt-4">
-                    @if ($periodeTerpilih->status === 'ditutup')
-                    <a href="{{ route('rancangan.index') }}"
-                        class="inline-block w-full px-6 py-3 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 transition duration-200 ease-in-out transform hover:scale-105 text-center">
-                        Lihat Pengajuan Anggaran
-                    </a>
-                    @else
-                    @if ($periodeTerpilih->sudahMengajukan)
-                    <a href="{{ route('rancangan.index') }}"
-                        class="inline-block w-full px-6 py-3 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 transition duration-200 ease-in-out transform hover:scale-105 text-center">
-                        Lihat Pengajuan Anggaran
-                    </a>
-                    @else
-                    <a href="{{ route('rancangan.create', ['periode_id' => $periodeTerpilih->id]) }}"
-                        class="inline-block w-full px-6 py-3 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition duration-200 ease-in-out transform hover:scale-105 text-center">
-                        Ajukan Anggaran
-                    </a>
-                    @endif
-                    @endif
-                </div>
 
+                    </div>
+
+                    {{-- Action Buttons --}}
+                    <div class="mt-4">
+                        @if ($periodeTerpilih->status === 'ditutup')
+                        <a href="{{ route('rancangan.index') }}"
+                            class="inline-block w-full px-6 py-3 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 transition duration-200 ease-in-out transform hover:scale-105 text-center">
+                            Lihat Pengajuan Anggaran
+                        </a>
+                        @else
+                        @if ($periodeTerpilih->sudahMengajukan)
+                        <a href="{{ route('rancangan.index') }}"
+                            class="inline-block w-full px-6 py-3 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 transition duration-200 ease-in-out transform hover:scale-105 text-center">
+                            Lihat Pengajuan Anggaran
+                        </a>
+                        @else
+                        <a href="{{ route('rancangan.create', ['periode_id' => $periodeTerpilih->id]) }}"
+                            class="inline-block w-full px-6 py-3 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition duration-200 ease-in-out transform hover:scale-105 text-center">
+                            Ajukan Anggaran
+                        </a>
+                        @endif
+                        @endif
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
 

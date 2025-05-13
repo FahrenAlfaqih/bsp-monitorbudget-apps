@@ -1,11 +1,28 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Periode Anggaran
-        </h2>
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                Periode Anggaran
+            </h2>
+        </div>
     </x-slot>
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-gray-200 text-gray-800 p-4 mb-6 rounded-lg border border-gray-300">
+            <h3 class="font-semibold mb-2">Panduan Penggunaan Periode Anggaran</h3>
+            <ul class="list-disc list-inside text-sm space-y-1">
+                <li><strong>Fungsi Periode:</strong> Sebagai wadah untuk departemen mengajukan anggaran perjalanan dinas untuk satu tahun ke depan.</li>
+                <li><strong>Status Periode:</strong>
+                    <ul class="list-disc list-inside ml-5">
+                        <li>Secara default, status akan <strong>Dibuka</strong> selama tanggal berakhir belum lewat dari tanggal sekarang.</li>
+                        <li>Jika tanggal berakhir melewati tanggal sekarang, status otomatis akan berubah menjadi <strong>Ditutup</strong>, dan departemen tidak dapat lagi mengajukan anggaran.</li>
+                    </ul>
+                </li>
+                <li><strong>Ketentuan:</strong> Hanya boleh membuat <strong>satu periode anggaran</strong> dalam satu tahun. Pastikan tidak ada duplikasi tahun.</li>
+            </ul>
+        </div>
+
+
         <!-- Card Periode Anggaran -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
             <div class="flex justify-between items-center mb-6">
@@ -22,6 +39,7 @@
                             <th class="py-3 px-4 text-sm font-medium">Mulai</th>
                             <th class="py-3 px-4 text-sm font-medium">Berakhir</th>
                             <th class="py-3 px-4 text-sm font-medium">Status</th>
+                            <th class="py-3 px-4 text-sm font-medium text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,6 +53,13 @@
                                     {{ $periode->status == 'dibuka' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                     {{ ucfirst($periode->status) }}
                                 </span>
+                            </td>
+                            <td class="py-3 px-4 text-sm text-center">
+                                <a href="{{ route('periode.edit', $periode->id) }}"
+                                    class="inline-block px-3 py-1 text-sm text-white bg-yellow-500 hover:bg-yellow-600 rounded-lg transition">
+                                    Edit
+                                </a>
+
                             </td>
                         </tr>
                         @endforeach

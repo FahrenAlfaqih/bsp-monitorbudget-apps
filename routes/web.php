@@ -38,9 +38,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('rancangan/create', [RancanganAnggaranController::class, 'create'])->name('rancangan.create');
-    Route::post('rancangan/store', [RancanganAnggaranController::class, 'store'])->name('rancangan.store');
-    Route::get('/rancangan/{id}/edit', [RancanganAnggaranController::class, 'edit'])->name('rancangan.edit');
+    Route::resource('rancangan', RancanganAnggaranController::class);
+    // Route::get('rancangan/create', [RancanganAnggaranController::class, 'create'])->name('rancangan.create');
+    // Route::post('rancangan/store', [RancanganAnggaranController::class, 'store'])->name('rancangan.store');
+    // Route::get('/rancangan/{id}/edit', [RancanganAnggaranController::class, 'edit'])->name('rancangan.edit');
+
 
     Route::get('/spd/pengajuan', [SpdController::class, 'pengajuan'])->name('spd.pengajuan');
     Route::get('/spd/{spd}/update-status', [SpdController::class, 'editStatus'])->name('spd.editStatus');
@@ -70,17 +72,12 @@ Route::middleware(['auth', 'role:admindept_hcm'])->group(function () {
 
 Route::middleware(['auth', 'role:admindept'])->group(function () {
     Route::get('/dashboard/admindept', [AdminDeptController::class, 'dashboard'])->name('dashboard.admindept');
-
 });
 
 
 Route::middleware(['auth', 'role:tmhcm'])->group(function () {
     Route::get('/dashboard/tmhcm', [TmController::class, 'dashboard'])->name('dashboard.tmhcm');
-
-    Route::get('/periode-anggaran', [PeriodeAnggaranController::class, 'index'])->name('periode.index');
-    Route::get('/periode-anggaran/create', [PeriodeAnggaranController::class, 'create'])->name('periode.create');
-    Route::post('/periode-anggaran', [PeriodeAnggaranController::class, 'store'])->name('periode.store');
-
+    Route::resource('periode', PeriodeAnggaranController::class);
     Route::put('rancangan/{id}/status', [RancanganAnggaranController::class, 'updateStatus'])->name('rancangan.updateStatus');
 });
 

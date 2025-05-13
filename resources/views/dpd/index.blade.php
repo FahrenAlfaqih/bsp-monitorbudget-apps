@@ -1,17 +1,17 @@
-<!-- resources/views/dpd/index.blade.php -->
-
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Daftar DPD
-        </h2>
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                Data Deklarasi Perjalanan Dinas
+            </h2>
+        </div>
     </x-slot>
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <!-- Card Daftar DPD -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-semibold text-gray-700">Data Deklarasi Perjalanan Dinas</h3>
+                <h3 class="text-lg font-semibold text-gray-700">Daftar Deklarasi Perjalanan Dinas</h3>
                 <a href="{{ route('dpd.create') }}" class="inline-block px-6 py-2.5 text-white bg-blue-600 hover:bg-blue-700 font-medium text-sm rounded-lg shadow-md transition">Tambah DPD</a>
             </div>
 

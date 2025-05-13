@@ -1,8 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            PT. Bumi Siak Pusako
-        </h2>
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                PT. Bumi Siak Pusako
+            </h2>
+        </div>
     </x-slot>
 
     <div class="py-12">
@@ -25,9 +27,6 @@
                 </button>
             </form>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                <!-- Card Karyawan -->
-
-
 
                 <div class="bg-white shadow-xl rounded-2xl p-6">
                     <h2 class="text-xl font-bold mb-4 text-blue-600">Top 10 Pegawai</h2>

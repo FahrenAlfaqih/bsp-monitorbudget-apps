@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pegawai;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;use Illuminate\Support\Facades\Log;
 
 class PegawaiController extends Controller
 {

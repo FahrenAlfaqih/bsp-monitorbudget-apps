@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Buka Periode Anggaran
+                Edit Periode Anggaran
             </h2>
         </div>
     </x-slot>
@@ -20,19 +20,37 @@
             </ul>
         </div>
 
-        <form action="{{ route('periode.store') }}" method="POST" class="bg-white p-6 rounded-lg shadow-sm">
+        <form action="{{ route('periode.update', $periode->id) }}" method="POST" class="bg-white p-6 rounded-lg shadow-sm">
             @csrf
+            @method('PUT')
 
             <div class="mb-4">
-                <x-input name="nama_periode" label="Nama Periode" required />
+                <x-input 
+                    name="nama_periode" 
+                    label="Nama Periode" 
+                    value="{{ old('nama_periode', $periode->nama_periode) }}" 
+                    required 
+                />
             </div>
 
             <div class="mb-4">
-                <x-input name="mulai" label="Tanggal Mulai" type="date" required />
+                <x-input 
+                    name="mulai" 
+                    label="Tanggal Mulai" 
+                    type="date" 
+                    value="{{ old('mulai', $periode->mulai) }}" 
+                    required 
+                />
             </div>
 
             <div class="mb-4">
-                <x-input name="berakhir" label="Tanggal Berakhir" type="date" required />
+                <x-input 
+                    name="berakhir" 
+                    label="Tanggal Berakhir" 
+                    type="date" 
+                    value="{{ old('berakhir', $periode->berakhir) }}" 
+                    required 
+                />
             </div>
 
             <div class="flex justify-end mt-8">
@@ -42,7 +60,7 @@
                 </a>
                 <button type="submit"
                     class="inline-block px-6 py-2.5 text-white bg-blue-600 hover:bg-blue-700 font-medium text-sm rounded-lg shadow-md transition">
-                    Simpan Periode
+                    Update Periode
                 </button>
             </div>
         </form>

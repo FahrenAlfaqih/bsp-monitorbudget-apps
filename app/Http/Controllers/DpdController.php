@@ -26,7 +26,8 @@ class DpdController extends Controller
         $request->validate([
             'spd_id' => 'required|exists:surat_perjalanan_dinas,id',
             'total_biaya' => 'required|numeric',
-            'tanggal_deklarasi' => 'required|date',
+            'tanggal_deklarasi' 
+            => 'required|date',
             'uraian' => 'nullable|string',
         ]);
 
