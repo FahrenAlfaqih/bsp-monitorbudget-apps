@@ -33,7 +33,6 @@
         <div class="bg-white p-6 shadow-md rounded-lg mb-6">
             <h3 class="font-semibold text-lg text-gray-800 mb-4">Filter Pengajuan SPD</h3>
             <form action="{{ route('spd.index') }}" method="GET" class="flex flex-wrap gap-3 sm:gap-4 items-end">
-
                 {{-- Filter Departemen --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>

@@ -45,6 +45,20 @@ class RancanganAnggaranController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        $periodeAktif = PeriodeAnggaran::where('status', 'dibuka')->first();
+
+        if (!$periodeAktif) {
+            Alert::warning('Perhatian', 'Tidak ada periode anggaran yang aktif.');
+            return redirect()->route('rancangan.index');
+        }
+
+        return view('rancangan.create', [
+            'periode' => [$periodeAktif],
+            'selectedPeriodeId' => $periodeAktif->id
+        ]);
+    }
 
 
     public function store(Request $request)
