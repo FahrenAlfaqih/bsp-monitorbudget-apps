@@ -39,6 +39,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('rancangan', RancanganAnggaranController::class);
+    Route::get('/rancangan/editStatus/{id}', [RancanganAnggaranController::class, 'editStatus'])->name('rancangan.editStatus');
+
     // Route::get('rancangan/create', [RancanganAnggaranController::class, 'create'])->name('rancangan.create');
     // Route::post('rancangan/store', [RancanganAnggaranController::class, 'store'])->name('rancangan.store');
     // Route::get('/rancangan/{id}/edit', [RancanganAnggaranController::class, 'edit'])->name('rancangan.edit');

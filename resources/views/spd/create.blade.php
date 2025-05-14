@@ -14,106 +14,17 @@
                     @csrf
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {{-- Departemen --}}
-                        <div>
-                            <label for="departemen_id" class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
-                            <select name="departemen_id" id="departemen_id" required
-                                class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900">
-                                <option value="">Pilih Departemen</option>
-                                @foreach($departemen as $dept)
-                                <!-- <option value="{{ $dept->id }}">{{ $dept->name }}</option> -->
-                                <option value="{{ $dept->id }}" {{ request('departemen') == $dept->id ? 'selected' : '' }}>
-                                    {{ $dept->nama }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        {{-- Periode --}}
-                        <div>
-                            <label for="periode_id" class="block text-sm font-medium text-gray-700 mb-1">Periode</label>
-                            <select name="periode_id" id="periode_id" required
-                                class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900">
-                                <option value="">Pilih Periode</option>
-                                @foreach($periodes as $periode)
-                                <option value="{{ $periode->id }}">{{ $periode->nama_periode }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-
-                        {{-- Nomor SPD --}}
-                        <div>
-                            <label for="nomor_spd" class="block text-sm font-medium text-gray-700 mb-1">Nomor SPD</label>
-                            <input type="text" name="nomor_spd" id="nomor_spd" required
-                                class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-
-                        {{-- Nama Pegawai --}}
-                        <div>
-                            <label for="pegawai_id" class="block text-sm font-medium text-gray-700 mb-1">Nama Pegawai</label>
-                            <select name="pegawai_id" id="pegawai_id" class="w-full select2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
-                                <option value="">-- Pilih Pegawai --</option>
-                                @foreach($pegawais as $pegawai)
-                                <option value="{{ $pegawai->id }}">{{ $pegawai->nama_pegawai }} </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-
-                        {{-- Asal --}}
-                        <div>
-                            <label for="asal" class="block text-sm font-medium text-gray-700 mb-1">Asal</label>
-                            <input type="text" name="asal" id="asal" required
-                                class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-
-                        {{-- Tujuan --}}
-                        <div>
-                            <label for="tujuan" class="block text-sm font-medium text-gray-700 mb-1">Tujuan</label>
-                            <input type="text" name="tujuan" id="tujuan" required
-                                class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-
-                        {{-- Tanggal Berangkat --}}
-                        <div>
-                            <label for="tanggal_berangkat" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Berangkat</label>
-                            <input type="date" name="tanggal_berangkat" id="tanggal_berangkat" required
-                                class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-
-                        {{-- Tanggal Kembali --}}
-                        <div>
-                            <label for="tanggal_kembali" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Kembali</label>
-                            <input type="date" name="tanggal_kembali" id="tanggal_kembali" required
-                                class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-
-                        {{-- Jenis Transport --}}
-                        <div>
-                            <label for="jenis_transport" class="block text-sm font-medium text-gray-700 mb-1">Jenis Transport</label>
-                            <select name="jenis_transport" id="jenis_transport" required
-                                class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900">
-                                <option value="">Pilih Jenis Transport</option>
-                                <option value="Udara">Udara</option>
-                                <option value="Darat">Darat</option>
-                            </select>
-                        </div>
-
-
-                        {{-- Nama Transport --}}
-                        <div>
-                            <label for="nama_transport" class="block text-sm font-medium text-gray-700 mb-1">Nama Transport</label>
-                            <input type="text" name="nama_transport" id="nama_transport"
-                                class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-
-                        {{-- Kegiatan --}}
-                        <div class="md:col-span-2">
-                            <label for="kegiatan" class="block text-sm font-medium text-gray-700 mb-1">Kegiatan</label>
-                            <textarea name="kegiatan" id="kegiatan" rows="4"
-                                class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
-                        </div>
+                        <x-select name="departemen_id" label="Departemen" :options="$departemen->pluck('nama', 'id')" :selected="request('departemen')" required />
+                        <x-select name="periode_id" label="Periode" :options="$periodes->pluck('nama_periode', 'id')" required />
+                        <x-input name="nomor_spd" label="Nomor SPD" required />
+                        <x-select name="pegawai_id" label="Nama Pegawai" :options="$pegawais->pluck('nama_pegawai', 'id')" required class="select2" />
+                        <x-input name="asal" label="Asal Dinas" required />
+                        <x-input name="tujuan" label="Tujuan Dinas" required />
+                        <x-input name="tanggal_berangkat" label="Tanggal Berangkat" type="date" required />
+                        <x-input name="tanggal_kembali" label="Tanggal Kembali" type="date" required />
+                        <x-select name="jenis_transport" label="Jenis Transport" :options="['Udara' => 'Udara', 'Darat' => 'Darat']" required />
+                        <x-input name="nama_transport" label="Nama Transportasi" required />
+                        <x-textarea name="kegiatan" label="Kegiatan" rows="4" required />
                     </div>
 
                     {{-- Tombol --}}

@@ -22,6 +22,9 @@ class RancanganAnggaranController extends Controller
             if ($request->filled('departemen')) {
                 $query->where('departemen_id', $request->departemen);
             }
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
         } else {
             $query = RancanganAnggaran::with('periode')
                 ->where('departemen_id', Auth::user()->departemen->id);
@@ -33,8 +36,16 @@ class RancanganAnggaranController extends Controller
 
         $rancangan = $query->get();
 
-        return view('rancangan.index', compact('rancangan', 'periodeList', 'departemenList'));
+        return view('rancangan.index', [
+            'rancangan' => $rancangan,
+            'periodeList' => $periodeList,
+            'departemenList' => $departemenList,
+            'selectedPeriode' => $request->periode,
+            'selectedDepartemen' => $request->departemen,
+        ]);
     }
+
+
 
     public function store(Request $request)
     {
@@ -72,17 +83,24 @@ class RancanganAnggaranController extends Controller
         $rancangan->update([
             'periode_id' => $request->periode_id,
             'jumlah_anggaran' => $request->jumlah_anggaran,
+            'status' => 'menunggu'
         ]);
 
         Alert::success('Berhasil', 'Rancangan anggaran berhasil diperbarui.');
         return redirect()->route('rancangan.index');
     }
 
+    public function editStatus($id)
+    {
+        $rancangan = RancanganAnggaran::findOrFail($id);
+        return view('rancangan.update-status', compact('rancangan'));
+    }
+
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
             'status' => 'required|in:menunggu,disetujui,ditolak',
-            'catatan' => 'nullable|string'
+            'catatan' => $request->status === 'ditolak' ? 'required|string' : 'nullable|string'
         ]);
 
         $rancangan = RancanganAnggaran::findOrFail($id);

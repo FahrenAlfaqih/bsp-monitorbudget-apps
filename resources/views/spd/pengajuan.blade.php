@@ -8,11 +8,33 @@
     </x-slot>
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+
+        {{-- Panduan Pengelolaan Pengajuan SPD --}}
+        <div class="bg-gray-200 text-gray-800 p-4 mb-6 rounded-lg border border-gray-300">
+            <h3 class="font-semibold mb-2 text-base">Panduan Pengelolaan Pengajuan SPD</h3>
+            <ul class="list-disc list-inside text-sm space-y-1">
+                <li><strong>Status SPD:</strong>
+                    <ul class="list-disc list-inside ml-5">
+                        <li><span class="font-semibold">Diajukan:</span> SPD sedang menunggu persetujuan. Anda dapat mengubah status melalui tombol <em>Edit Status</em>.</li>
+                        <li><span class="font-semibold">Disetujui:</span> SPD telah disetujui dan dapat dilanjutkan untuk pembuatan DPD.</li>
+                        <li><span class="font-semibold">Ditolak:</span> SPD ditolak dan tidak dapat diproses lebih lanjut. Tombol aksi akan dinonaktifkan.</li>
+                    </ul>
+                </li>
+                <li><strong>Tombol Edit Status:</strong> Hanya tersedia untuk SPD berstatus <em>diajukan</em>
+                </li>
+            </ul>
+        </div>
+
         <!-- Card Daftar SPD -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-lg font-semibold text-gray-700">Daftar SPD yang Diajukan</h3>
             </div>
+
+            <!-- @if($spds->isEmpty())
+            <p class="mb-3 text-gray-500 text-sm">Belum ada pengajuan SPD oleh Departemen HCM</p>
+            @endif -->
 
             <!-- Table -->
             <div class="overflow-x-auto">
@@ -30,11 +52,12 @@
                             <th class="py-3 px-4 text-sm font-medium">Nama Transport</th>
                             <th class="py-3 px-4 text-sm font-medium">Departemen</th>
                             <th class="py-3 px-4 text-sm font-medium">Status</th>
-                            <th class="py-3 px-4 text-sm font-medium">Aksi</th> <!-- Kolom Aksi -->
+                            <th class="py-3 px-4 text-sm font-medium">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($spds as $spd)
+
                         <tr class="border-b hover:bg-gray-50 transition duration-300">
                             <td class="py-3 px-4 text-sm">{{ $spd->nomor_spd }}</td>
                             <td class="py-3 px-4 text-sm">{{ $spd->nama_pegawai }}</td>

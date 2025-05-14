@@ -12,7 +12,7 @@
             <p id="welcomeText" class="mb-4"></p>
 
             {{-- Statistik Card --}}
-            <h3 class="text-lg font-semibold mb-4">Anggaran Periode</h3>
+            <!-- <h3 class="text-lg font-semibold mb-4">Anggaran Periode</h3> -->
 
             <form method="GET" action="{{ route('dashboard.admindept') }}" class="mb-6 flex items-center gap-4">
                 <label for="periode_id" class="text-sm font-medium text-gray-700">Filter Periode:</label>
@@ -88,13 +88,17 @@
                                 </span>
                             </p>
                             @elseif ($periodeTerpilih->statusPengajuan === 'disetujui')
-                            <span class="px-3 py-1 text-sm">
-                                Disetujui
-                            </span>
+                            <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
+                                <span>
+                                    Disetujui
+                                </span>
+                            </p>
                             @elseif ($periodeTerpilih->statusPengajuan === 'ditolak')
-                            <span class="px-3 py-1 text-sm">
-                                Ditolak
-                            </span>
+                            <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
+                                <span>
+                                    Ditolak
+                                </span>
+                            </p>
                             @endif
                         </div>
                         @endif

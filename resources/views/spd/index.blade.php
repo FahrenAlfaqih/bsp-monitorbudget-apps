@@ -1,4 +1,3 @@
-
 <x-app-layout>
     <x-slot name="header">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -9,6 +8,27 @@
     </x-slot>
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-gray-200 text-gray-800 p-4 mb-6 rounded-lg border border-gray-300">
+            <h3 class="font-semibold mb-2">Panduan Pengajuan Surat Perjalanan Dinas</h3>
+            <ul class="list-disc list-inside text-sm space-y-1">
+                <li><strong>Tata Cara Pengajuan SPD:</strong></li>
+                <ul class="list-disc list-inside ml-5">
+                    <li>Pastikan SPD yang akan diajukan sudah tersedia di table, jika belum klik <strong>Tambah SPD</strong></li>
+                    <li>Pilih list SPD karyawan yang akan diajukan ke finance (boleh lebih dari satu)</li>
+                    <li>Klik <strong>Ajukan SPD ke Finance</strong> hingga status berubah menjadi <strong>Diajukan</strong></li>
+                    <li>Anda bisa melakukan pengajuan SPD kembali jika status ditolak</li>
+                    <li>SPD yang sudah diterima tidak dapat diajukan kembali</li>
+
+                </ul>
+                <li><strong>Status Pengajuan:</strong>
+                    <ul class="list-disc list-inside ml-5">
+                        <li>Secara default, status akan <strong>Menunggu</strong> selama anda belum mengajukan SPD</li>
+                        <li>Jika status <strong>Ditolak</strong> maka akan menampilkan catatan dan tanggal deklarasi oleh Departemen Finance</li>
+                        <li>Jika status <strong>Disetujui</strong> maka data SPD akan menerbitkan DPD</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
         <!-- Card Daftar SPD -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
 
