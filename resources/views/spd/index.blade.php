@@ -29,9 +29,81 @@
                 </li>
             </ul>
         </div>
+
+        <div class="bg-white p-6 shadow-md rounded-lg mb-6">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Filter Pengajuan SPD</h3>
+            <form action="{{ route('spd.index') }}" method="GET" class="flex flex-wrap gap-3 sm:gap-4 items-end">
+
+                {{-- Filter Departemen --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
+                    <select name="departemen"
+                        class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Semua Departemen --</option>
+                        @foreach ($departemenList as $dep)
+                        <option value="{{ $dep->id }}" {{ request('departemen') == $dep->id ? 'selected' : '' }}>
+                            {{ $dep->nama }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Filter Status --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select name="status"
+                        class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Semua Status --</option>
+                        <option value="diajukan" {{ request('status') == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
+                        <option value="disetujui" {{ request('status') == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
+                        <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                    </select>
+                </div>
+
+                {{-- Filter Rentang Tanggal --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Dari Tanggal</label>
+                    <input type="date" name="start_date" value="{{ request('start_date') }}"
+                        class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Sampai Tanggal</label>
+                    <input type="date" name="end_date" value="{{ request('end_date') }}"
+                        class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                {{-- Filter Jenis Transport --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Transport</label>
+                    <select name="jenis_transport"
+                        class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Semua jenis_transport --</option>
+                        <option value="darat" {{ request('jenis_transport') == 'darat' ? 'selected' : '' }}>Darat</option>
+                        <option value="udara" {{ request('jenis_transport') == 'udara' ? 'selected' : '' }}>Udara</option>
+                    </select>
+                </div>
+
+
+                <div>
+                    <button type="submit"
+                        class="mt-5 text-sm px-4 py-2 border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <i class="fas fa-filter mr-1"></i> Filter
+                    </button>
+
+                    <a href="{{ route('spd.index') }}"
+                        class="mt-5 text-sm px-4 py-2 ml-4 border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <i class="fas fa-sync-alt mr-1"></i> Reload
+                    </a>
+
+                </div>
+            </form>
+
+
+
+        </div>
         <!-- Card Daftar SPD -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-
             <form action="{{ route('spd.ajukan') }}" method="POST">
                 @csrf
                 <div class="flex justify-between items-center mb-6">

@@ -8,7 +8,25 @@
     </x-slot>
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <!-- Card Form Update -->
+        <div class="bg-gray-200 text-gray-800 p-4 mb-6 rounded-lg border border-gray-300">
+            <h3 class="font-semibold mb-2">Panduan Edit Pengajuan Surat Perjalanan Dinas</h3>
+            <ul class="list-disc list-inside text-sm space-y-1">
+                <li><strong>Tata Cara Pengajuan SPD:</strong></li>
+                <ul class="list-disc list-inside ml-5">
+                    <li>Pastikan anda telah benar benar mereview dokumen SPD yang telah diajukan</li>
+                    <li>Pilih status dari SPD yang diajukan</li>
+                    <li>Status SPD yang telah <strong>Disetujui</strong> tidak akan dapat diubah kembali</li>
+                    <li>SPD yang disetujui akan menerbitkan data Deklarasi Perjalanan Dinas (DPD)</li>
+
+                </ul>
+                <li><strong>Status Pengajuan:</strong>
+                    <ul class="list-disc list-inside ml-5">
+                        <li>Jika status <strong>Disetujui</strong> maka anda wajib mengisi total biaya, tanggal deklarasi, dan uraian (catatan wajib)</li>
+                        <li>Jika status <strong>Ditolak</strong> maka anda cukup mengisi tanggal deklarasi dan uraian (catatan wajib)</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
             <h3 class="text-lg font-semibold text-gray-700 mb-4">Form Update Status SPD</h3>
 

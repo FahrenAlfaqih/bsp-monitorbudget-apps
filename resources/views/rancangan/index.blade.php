@@ -138,10 +138,16 @@
                                 @endif
 
                                 @elseif(auth()->user()->role === 'tmhcm')
+                                @if($r->status === 'disetujui')
+                                <button class="inline-block px-3 py-1 text-sm bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed" disabled>
+                                    Edit
+                                </button>
+                                @else
                                 <a href="{{ route('rancangan.editStatus', $r->id) }}"
                                     class="inline-block px-3 py-1 text-sm text-white bg-blue-500 hover:bg-blue-600 rounded-lg transition">
                                     Edit
                                 </a>
+                                @endif
                                 @endif
                             </td>
 

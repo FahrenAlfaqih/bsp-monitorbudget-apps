@@ -22,8 +22,35 @@
                     </ul>
                 </li>
                 <li><strong>Tombol Edit Status:</strong> Hanya tersedia untuk SPD berstatus <em>diajukan</em>
+                <li><strong>Pilih departemen</strong> Untuk menampilkan pengajuan SPD berdasarkan departemen
                 </li>
             </ul>
+        </div>
+
+        <div class="bg-white p-6 shadow-md rounded-lg mb-6">
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Filter Pengajuan SPD</h3>
+            <form action="{{ route('spd.pengajuan') }}" method="GET" class="flex flex-wrap gap-3 sm:gap-4 items-end">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
+                    <select name="departemen"
+                        class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Semua Departemen --</option>
+                        @foreach ($departemenList as $dep)
+                        <option value="{{ $dep->id }}" {{ request('departemen') == $dep->id ? 'selected' : '' }}>
+                            {{ $dep->nama }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <button type="submit"
+                        class="mt-5 text-sm px-4 py-2 border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <i class="fas fa-filter mr-1"></i> Filter
+                    </button>
+                </div>
+            </form>
+
         </div>
 
         <!-- Card Daftar SPD -->

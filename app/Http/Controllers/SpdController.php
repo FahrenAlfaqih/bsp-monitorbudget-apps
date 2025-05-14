@@ -13,12 +13,34 @@ use Illuminate\Support\Facades\Auth;
 
 class SpdController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $spds = Spd::with(['departemen', 'user'])->get();
+        $query = Spd::with(['departemen', 'user']);
 
-        return view('spd.index', compact('spds'));
+        if ($request->filled('departemen')) {
+            $query->where('departemen_id', $request->departemen);
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('jenis_transport')) {
+            $query->where('jenis_transport', $request->jenis_transport);
+        }
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('tanggal_berangkat', [$request->start_date, $request->end_date]);
+        } elseif ($request->filled('start_date')) {
+            $query->whereDate('tanggal_berangkat', '>=', $request->start_date);
+        } elseif ($request->filled('end_date')) {
+            $query->whereDate('tanggal_berangkat', '<=', $request->end_date);
+        }
+
+        $spds = $query->get();
+        $departemenList = Departemen::all();
+
+        return view('spd.index', compact('spds', 'departemenList'));
     }
+
 
 
 
@@ -36,12 +58,20 @@ class SpdController extends Controller
         return back()->with('success', 'SPD berhasil diajukan ke finance.');
     }
 
-    public function pengajuan()
+    public function pengajuan(Request $request)
     {
+        $query = Spd::query()->where('status', 'diajukan');
 
-        $spds = Spd::where('status', 'diajukan')->get();
-        return view('spd.pengajuan', compact('spds'));
+        if ($request->filled('departemen')) {
+            $query->where('departemen_id', $request->departemen);
+        }
+
+        $spds = $query->get();
+        $departemenList = Departemen::all();
+
+        return view('spd.pengajuan', compact('spds', 'departemenList'));
     }
+
 
     public function editStatus(Spd $spd)
     {
@@ -91,8 +121,8 @@ class SpdController extends Controller
         $departemen = Departemen::all();
         $users = User::all();
         $pegawais = Pegawai::all();
-        $periodes = PeriodeAnggaran::all(); 
-    
+        $periodes = PeriodeAnggaran::all();
+
         return view('spd.create', compact('departemen', 'users', 'pegawais', 'periodes'));
     }
 
@@ -121,7 +151,7 @@ class SpdController extends Controller
             'periode_id' => $validated['periode_id'],
             'user_id' => Auth::id(),
             'nomor_spd' => $validated['nomor_spd'],
-            'nama_pegawai' => $pegawai->nama_pegawai, 
+            'nama_pegawai' => $pegawai->nama_pegawai,
             'asal' => $validated['asal'],
             'tujuan' => $validated['tujuan'],
             'kegiatan' => $validated['kegiatan'],
