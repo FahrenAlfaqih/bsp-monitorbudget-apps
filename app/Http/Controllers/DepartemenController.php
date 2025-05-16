@@ -6,6 +6,9 @@ use App\Models\Departemen;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use RealRashid\SweetAlert\Facades\Alert;
+
+
 
 class DepartemenController extends Controller
 {
@@ -64,8 +67,8 @@ class DepartemenController extends Controller
             'nama' => $request->nama,
             'email' => $request->email,
         ]);
-
-        return redirect()->route('departemen.index')->with('success', 'Departemen berhasil ditambahkan');
+        Alert::success('Berhasil', 'Departemen berhasil ditambahkan, harap setiap admin departemen untuk mengganti password default!');
+        return redirect()->route('departemen.index');
     }
 
     /**
@@ -96,7 +99,7 @@ class DepartemenController extends Controller
         ]);
 
         $departemen->update($validated);
-
-        return redirect()->route('departemen.index')->with('success', 'Data Departemen berhasil diperbarui.');
+        Alert::success('Berhasil', 'Data Departemen berhasil diperbarui!');
+        return redirect()->route('departemen.index');
     }
 }

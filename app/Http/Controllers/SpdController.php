@@ -10,6 +10,8 @@ use App\Models\Spd;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use RealRashid\SweetAlert\Facades\Alert;
+
 
 class SpdController extends Controller
 {
@@ -54,8 +56,8 @@ class SpdController extends Controller
 
 
         Spd::whereIn('id', $ids)->update(['status' => 'diajukan']);
-
-        return back()->with('success', 'SPD berhasil diajukan ke finance.');
+        Alert::success('Berhasil', 'SPD berhasil diajukan ke finance!');
+        return back();
     }
 
     public function pengajuan(Request $request)
@@ -110,8 +112,8 @@ class SpdController extends Controller
                 ]);
             }
         }
-
-        return redirect()->route('spd.pengajuan')->with('success', 'Status SPD berhasil diupdate.');
+        Alert::success('Berhasil', 'Status SPD berhasil diupdate!');
+        return redirect()->route('spd.pengajuan');
     }
 
 
@@ -121,7 +123,7 @@ class SpdController extends Controller
         $departemen = Departemen::all();
         $users = User::all();
         $pegawais = Pegawai::all();
-        $periodes = PeriodeAnggaran::all();
+        $periodes = PeriodeAnggaran::orderBy('mulai', 'desc')->first();
 
         return view('spd.create', compact('departemen', 'users', 'pegawais', 'periodes'));
     }
@@ -160,7 +162,8 @@ class SpdController extends Controller
             'jenis_transport' => $validated['jenis_transport'],
             'nama_transport' => $validated['nama_transport'],
         ]);
+        Alert::success('Berhasil', 'Surat Perjalanan Dinas berhasil ditambahkan!');
 
-        return redirect()->route('spd.index')->with('success', 'Surat Perjalanan Dinas berhasil ditambahkan!');
+        return redirect()->route('spd.index');
     }
 }

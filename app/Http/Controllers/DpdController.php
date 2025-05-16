@@ -7,6 +7,7 @@ use App\Models\Dpd;
 use App\Models\Spd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DpdController extends Controller
 {
@@ -26,7 +27,7 @@ class DpdController extends Controller
         $request->validate([
             'spd_id' => 'required|exists:surat_perjalanan_dinas,id',
             'total_biaya' => 'required|numeric',
-            'tanggal_deklarasi' 
+            'tanggal_deklarasi'
             => 'required|date',
             'uraian' => 'nullable|string',
         ]);
@@ -41,12 +42,45 @@ class DpdController extends Controller
         return redirect()->route('dpd.index')->with('success', 'Deklarasi perjalanan dinas berhasil disimpan.');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $deklarasi = Dpd::all();
-        return view('dpd.index', compact('deklarasi'));
-    }
+        $query = DB::table('deklarasi_perjalanan_dinas')
+            ->join('surat_perjalanan_dinas as spd', 'deklarasi_perjalanan_dinas.spd_id', '=', 'spd.id')
+            ->join('departemen', 'spd.departemen_id', '=', 'departemen.id')
+            ->select(
+                'deklarasi_perjalanan_dinas.*',
+                'spd.nomor_spd',
+                'spd.nama_pegawai',
+                'spd.tanggal_berangkat', 
+                'departemen.nama'
+            );
 
+        if ($request->filled('nama_pegawai')) {
+            $query->where('spd.nama_pegawai', 'like', '%' . $request->nama_pegawai . '%');
+        }
+
+        if ($request->filled('departemen')) {
+            $query->where('departemen.id', $request->departemen);
+        }
+
+        if ($request->filled('tanggal_deklarasi')) {
+            $query->where('deklarasi_perjalanan_dinas.tanggal_deklarasi', $request->tanggal_deklarasi);
+        }
+
+        if ($request->filled('tgl_dinas_awal')) {
+            $query->where('spd.tanggal_berangkat', $request->tgl_dinas_awal);
+        }
+
+        if ($request->filled('tgl_dinas_awal') && $request->filled('tgl_dinas_akhir')) {
+            $query->whereBetween('spd.tanggal_berangkat', [$request->tgl_dinas_awal, $request->tgl_dinas_akhir]);
+        }
+
+        $deklarasi = $query->get();
+
+        $departemenList = DB::table('departemen')->get();
+
+        return view('dpd.index', compact('deklarasi', 'departemenList'));
+    }
     public function edit($id)
     {
         $deklarasi = Dpd::findOrFail($id);

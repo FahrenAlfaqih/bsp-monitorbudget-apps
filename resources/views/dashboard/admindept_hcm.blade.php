@@ -12,7 +12,6 @@
             <p id="welcomeText"></p>
             <div class="mt-3">
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    <!-- Statistik Card -->
                     <div class="bg-white rounded-xl shadow p-4 h-full flex flex-col justify-between">
                         <h4 class="text-lg font-bold mb-2">Total SPD</h4>
                         <p class="text-2xl font-semibold">{{ $totalSpd }}</p>
@@ -34,6 +33,82 @@
                         <p class="text-2xl font-semibold text-blue-600">{{ $spdDiajukan }}</p>
                     </div>
                 </div>
+
+                <h3 class="text-lg font-semibold mt-4">Realisasi Anggaran Perjalanan Dinas </h3>
+                <form method="GET" action="{{ route('dashboard.admindept_hcm') }}" class="flex flex-wrap gap-3 sm:gap-4 items-end mb-4">
+                    <label for="periode_id" class="text-sm font-medium text-gray-700">Filter Periode:</label>
+                    <select name="periode_id" id="periode_id"
+                        class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Semua Periode --</option>
+                        @foreach($semuaPeriode as $periode)
+                        <option value="{{ $periode->id }}" {{ request('periode_id') == $periode->id ? 'selected' : '' }}>
+                            {{ $periode->nama_periode }}
+                        </option>
+                        @endforeach
+                    </select>
+                    <button type="submit"
+                        class="mt-5 text-sm px-4 py-2 border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <i class="fas fa-filter mr-1"></i> Filter
+                    </button>
+                </form>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
+                        <h4 class="text-lg font-bold mb-2">Total Anggaran Perjalanan Dinas</h4>
+                        <p class="text-lg font-semibold text-green-600">Rp {{ number_format($periodeTerpilih->total_anggaran_disetujui, 0, ',', '.') }}</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
+                        <h4 class="text-lg font-bold mb-2">Total Pengeluaran</h4>
+                        <p class="text-lg font-semibold text-red-600">Rp {{ number_format($periodeTerpilih->total_pengeluaran, 0, ',', '.') }}</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
+                        <h4 class="text-lg font-bold mb-2">Sisa Anggaran</h4>
+                        <p class="text-lg font-semibold text-yellow-600">Rp {{ number_format($periodeTerpilih->sisa_anggaran, 0, ',', '.') }}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    {{-- Top Karyawan --}}
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h4 class="text-lg font-semibold text-black-700 mb-4">Top Karyawan dengan Biaya Dinas Tertinggi</h4>
+                        <div class="text-sm text-gray-700 space-y-2">
+                            @foreach($topKaryawan as $karyawan)
+                            <div class="flex justify-between">
+                                <span class="font-medium">{{ $loop->iteration }}. {{ $karyawan->nama_pegawai }}</span>
+                                <span class="text-gray-800 font-semibold">Rp {{ number_format($karyawan->total_biaya, 0, ',', '.') }}</span>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+
+                    {{-- Top Budget Departemen --}}
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h4 class="text-lg font-semibold text-black-700 mb-4">Top Budget Departemen</h4>
+                        <ul class="text-sm text-gray-700 space-y-2">
+                            @foreach($topBudget as $budget)
+                            <div class="flex justify-between">
+                                <span class="font-medium">{{ $loop->iteration }}. {{ $budget->nama_pegawai }}</span>
+                                <span class="text-gray-800 font-semibold">Rp {{ number_format($budget->total_biaya, 0, ',', '.') }}</span>
+                            </div>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    {{-- Tujuan Dinas Paling Sering --}}
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h4 class="text-lg font-semibold text-black-700 mb-4">Tujuan Dinas Paling Sering</h4>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            @foreach($topTujuanDinas as $tujuan)
+                            <div class="flex justify-between">
+                                <span class="font-medium">{{ $loop->iteration }}. {{ $tujuan->tujuan }}</span>
+                                <span class="text-gray-800 font-semibold">{{ $tujuan->jumlah_tujuan }} kali</span>
+                            </div>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+
                 <div class="mt-4">
                     <h3 class="text-lg font-semibold mb-4">Periode Anggaran Aktif</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

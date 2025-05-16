@@ -10,9 +10,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <p id="welcomeText" class="mb-4"></p>
-
-            {{-- Statistik Card --}}
-            <!-- <h3 class="text-lg font-semibold mb-4">Anggaran Periode</h3> -->
+            <h3 class="text-lg font-semibold mt-4">Realisasi Anggaran Perjalanan Dinas </h3>
 
             <form method="GET" action="{{ route('dashboard.admindept') }}" class="mb-6 flex items-center gap-4">
                 <label for="periode_id" class="text-sm font-medium text-gray-700">Filter Periode:</label>
@@ -31,7 +29,6 @@
                 </button>
             </form>
 
-            {{-- Statistik berdasarkan periodeTerpilih --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                 <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
                     <h4 class="text-lg font-bold mb-2">Total Anggaran Perjalanan Dinas</h4>
@@ -47,32 +44,50 @@
                 </div>
             </div>
 
-            {{-- Statistik berdasarkan periodeTerpilih --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
-                    <h4 class="text-lg font-bold mb-2">Top Karyawan dengan Biaya Dinas Tertinggi</h4>
-                    @foreach($topKaryawan as $karyawan)
-                    <p>{{ $karyawan->nama_pegawai }} - Rp {{ number_format($karyawan->total_biaya, 0, ',', '.') }}</p>
-                    @endforeach
+                {{-- Top Karyawan --}}
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h4 class="text-lg font-semibold text-black-700 mb-4">Top Karyawan dengan Biaya Dinas Tertinggi</h4>
+                    <div class="text-sm text-gray-700 space-y-2">
+                        @foreach($topKaryawan as $karyawan)
+                        <div class="flex justify-between">
+                            <span class="font-medium">{{ $loop->iteration }}. {{ $karyawan->nama_pegawai }}</span>
+                            <span class="text-gray-800 font-semibold">Rp {{ number_format($karyawan->total_biaya, 0, ',', '.') }}</span>
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
 
-                <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
-                    <h4 class="text-lg font-bold mb-2">Top Budget Departemen</h4>
-                    @foreach($topBudget as $budget)
-                    <p>{{ $budget->nama_pegawai }} - Rp {{ number_format($budget->total_biaya, 0, ',', '.') }}</p>
-                    @endforeach
+
+                {{-- Top Budget Departemen --}}
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h4 class="text-lg font-semibold text-black-700 mb-4">Top Budget Departemen</h4>
+                    <ul class="text-sm text-gray-700 space-y-2">
+                        @foreach($topBudget as $budget)
+                        <div class="flex justify-between">
+                            <span class="font-medium">{{ $loop->iteration }}. {{ $budget->nama_pegawai }}</span>
+                            <span class="text-gray-800 font-semibold">Rp {{ number_format($budget->total_biaya, 0, ',', '.') }}</span>
+                        </div>
+                        @endforeach
+                    </ul>
                 </div>
 
-                <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
-                    <h4 class="text-lg font-bold mb-2">Tujuan Dinas Paling Sering</h4>
-                    @foreach($topTujuanDinas as $tujuan)
-                    <p>{{ $tujuan->tujuan }} - {{ $tujuan->jumlah_tujuan }} kali</p> {{-- Ganti 'tujuan_dinas' dengan 'tujuan' --}}
-                    @endforeach
+                {{-- Tujuan Dinas Paling Sering --}}
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h4 class="text-lg font-semibold text-black-700 mb-4">Tujuan Dinas Paling Sering</h4>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        @foreach($topTujuanDinas as $tujuan)
+                        <div class="flex justify-between">
+                            <span class="font-medium">{{ $loop->iteration }}. {{ $tujuan->tujuan }}</span>
+                            <span class="text-gray-800 font-semibold">{{ $tujuan->jumlah_tujuan }} kali</span>
+                        </div>
+                        @endforeach
+                    </ul>
                 </div>
             </div>
 
+            <h3 class="text-lg font-semibold mb-4">Periode Anggaran Aktif</h3>
 
-            {{-- Informasi Periode yang dipilih --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div class="bg-white rounded-xl shadow p-6 flex flex-col justify-between mb-6">
                     <div>

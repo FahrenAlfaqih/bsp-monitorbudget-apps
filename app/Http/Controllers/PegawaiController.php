@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pegawai;
-use Illuminate\Http\Request;use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use RealRashid\SweetAlert\Facades\Alert;
+
 
 class PegawaiController extends Controller
 {
@@ -53,11 +56,12 @@ class PegawaiController extends Controller
 
             $pegawai = Pegawai::create($validated);
             Log::info('Pegawai berhasil dibuat:', $pegawai->toArray());
-
-            return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil ditambahkan.');
+            Alert::success('Berhasil', 'Data pegawai berhasil ditambahkan!');
+            return redirect()->route('pegawai.index');
         } catch (\Exception $e) {
             Log::error('Gagal menyimpan pegawai: ' . $e->getMessage());
-            return back()->withErrors('Terjadi kesalahan saat menyimpan data.')->withInput();
+            Alert::error('Gagal menyimpan pegawai', 'Terjadi kesalahan saat menyimpan data!');
+            return back()->withInput();
         }
     }
 
@@ -92,12 +96,16 @@ class PegawaiController extends Controller
             ]);
 
             $pegawai->update($validated);
+
             Log::info('Data pegawai berhasil diperbarui:', $pegawai->toArray());
 
-            return redirect()->route('pegawai.index')->with('success', 'Data pegawai berhasil diperbarui.');
+            Alert::success('Berhasil', 'Data pegawai berhasil diperbarui!');
+            return redirect()->route('pegawai.index');
         } catch (\Exception $e) {
             Log::error('Gagal update pegawai: ' . $e->getMessage());
-            return back()->withErrors('Terjadi kesalahan saat memperbarui data.')->withInput();
+
+            Alert::error('Gagal', 'Terjadi kesalahan saat memperbarui data!');
+            return back()->withInput();
         }
     }
 }

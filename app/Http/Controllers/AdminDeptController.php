@@ -10,6 +10,8 @@ use App\Models\Spd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use RealRashid\SweetAlert\Facades\Alert;
+
 
 /**
  * @desc Controller ini berfungsi untuk mengirim data ke dashboard Admin Departemen HCM dan Selain Admin Departemen
@@ -156,6 +158,12 @@ class AdminDeptController extends Controller
 
         $user = Auth::user();
         $semuaPeriode = PeriodeAnggaran::orderBy('mulai', 'desc')->get();
+        $semuaPeriode = $semuaPeriode->map(function ($item) use ($user) {
+            $item->sudahMengajukan = RancanganAnggaran::where('departemen_id', $user->departemen->id)
+                ->where('periode_id', $item->id)
+                ->exists();
+            return $item;
+        });
 
         $periodeIdDipilih = $request->get('periode_id') ?? $semuaPeriode->first()?->id;
         $periodeTerpilih = PeriodeAnggaran::find($periodeIdDipilih);
@@ -167,11 +175,63 @@ class AdminDeptController extends Controller
         $periodeTerpilih->sudahMengajukan = $pengajuan ? true : false;
         $periodeTerpilih->statusPengajuan = $pengajuan->status ?? null;
 
+        // Data lainnya
+        $topKaryawan = DB::table('deklarasi_perjalanan_dinas as d')
+            ->join('surat_perjalanan_dinas as s', 'd.spd_id', '=', 's.id')
+            ->join('departemen', 's.departemen_id', '=', 'departemen.id')
+            ->where('s.departemen_id', $user->departemen->id)
+            ->whereBetween('d.tanggal_deklarasi', [$periodeTerpilih->mulai, $periodeTerpilih->berakhir])
+            ->select('s.nama_pegawai', DB::raw('SUM(d.total_biaya) as total_biaya'))
+            ->groupBy('s.nama_pegawai')
+            ->orderByDesc('total_biaya')
+            ->limit(10)
+            ->get();
+
+        $topBudget = DB::table('deklarasi_perjalanan_dinas as d')
+            ->join('surat_perjalanan_dinas as s', 'd.spd_id', '=', 's.id')
+            ->join('departemen', 's.departemen_id', '=', 'departemen.id')
+            ->where('s.departemen_id', $user->departemen->id)
+            ->whereBetween('d.tanggal_deklarasi', [$periodeTerpilih->mulai, $periodeTerpilih->berakhir])
+            ->select('s.nama_pegawai', DB::raw('SUM(d.total_biaya) as total_biaya'))
+            ->groupBy('s.nama_pegawai')
+            ->orderByDesc('total_biaya')
+            ->limit(10)
+            ->get();
+
+        $topTujuanDinas = DB::table('deklarasi_perjalanan_dinas as d')
+            ->join('surat_perjalanan_dinas as s', 'd.spd_id', '=', 's.id')
+            ->select('s.tujuan', DB::raw('COUNT(s.tujuan) as jumlah_tujuan'))
+            ->where('s.departemen_id', $user->departemen->id)
+            ->whereBetween('d.tanggal_deklarasi', [$periodeTerpilih->mulai, $periodeTerpilih->berakhir])
+            ->groupBy('s.tujuan')
+            ->orderByDesc('jumlah_tujuan')
+            ->limit(5)
+            ->get();
+
         $totalSpd = Spd::count();
         $totalDpd = Dpd::count();
         $spdDitolak = Spd::where('status', 'ditolak')->count();
+        if ($spdDitolak > 0) {
+            Alert::warning('Perhatian', 'Ada ' . $spdDitolak . ' SPD yang ditolak. Silakan periksa kembali.');
+        }
         $spdDisetujui = Spd::where('status', 'disetujui')->count();
         $spdDiajukan = Spd::where('status', 'diajukan')->count();
-        return view('dashboard.admindept_hcm', compact('rancangan', 'periodeTerpilih', 'periodeAktif', 'totalSpd', 'totalDpd', 'spdDitolak', 'spdDisetujui', 'spdDiajukan'));
+        return view(
+            'dashboard.admindept_hcm',
+            compact(
+                'rancangan',
+                'semuaPeriode',
+                'periodeTerpilih',
+                'periodeAktif',
+                'totalSpd',
+                'totalDpd',
+                'spdDitolak',
+                'spdDisetujui',
+                'spdDiajukan',
+                'topKaryawan',
+                'topBudget',
+                'topTujuanDinas'
+            )
+        );
     }
 }
