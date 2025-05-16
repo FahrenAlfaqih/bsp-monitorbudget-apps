@@ -36,8 +36,9 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <x-select name="departemen_id" label="Departemen" :options="$departemen->pluck('nama', 'id')" :selected="request('departemen')" required />
-                        <x-input name="periode_nama" label="Periode" :value="$periodes->nama_periode" readonly />
-                        <input type="hidden" name="periode_id" value="{{ $periodes->id }}"> <x-input name="nomor_spd" label="Nomor SPD" required />
+                        <x-input name="periode_nama" label="Periode" :value="$periodes->nama_periode ?? ''" readonly />
+                        <input type="hidden" name="periode_id" value="{{ $periodes->id ?? '' }}">
+                        <x-input name="nomor_spd" label="Nomor SPD" required />
                         <x-select name="pegawai_id" label="Nama Pegawai" :options="$pegawais->pluck('nama_pegawai', 'id')" required class="select2" />
                         <x-input name="asal" label="Asal Dinas" required />
                         <x-input name="tujuan" label="Tujuan Dinas" required />

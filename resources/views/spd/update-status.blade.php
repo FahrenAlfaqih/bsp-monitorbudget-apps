@@ -17,7 +17,6 @@
                     <li>Pilih status dari SPD yang diajukan</li>
                     <li>Status SPD yang telah <strong>Disetujui</strong> tidak akan dapat diubah kembali</li>
                     <li>SPD yang disetujui akan menerbitkan data Deklarasi Perjalanan Dinas (DPD)</li>
-
                 </ul>
                 <li><strong>Status Pengajuan:</strong>
                     <ul class="list-disc list-inside ml-5">
@@ -27,51 +26,82 @@
                 </li>
             </ul>
         </div>
+
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
             <h3 class="text-lg font-semibold text-gray-700 mb-4">Form Update Status SPD</h3>
 
             <form action="{{ route('spd.updateStatus', $spd->id) }}" method="POST">
                 @csrf
                 <div class="grid grid-cols-1 gap-6 mb-6">
-                    <!-- Status -->
-                    <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                        <select name="status" id="status" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="disetujui" {{ old('status', $spd->status) == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
-                            <option value="ditolak" {{ old('status', $spd->status) == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-                        </select>
-                        @error('status')
-                        <span class="text-red-600 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
 
-                    <!-- Total Biaya -->
+                    {{-- Status --}}
+                    <x-select
+                        name="status"
+                        label="Status"
+                        :options="['disetujui' => 'Disetujui', 'ditolak' => 'Ditolak']"
+                        :selected="$spd->status"
+                        required
+                        id="status" />
+
+                    {{-- Total Biaya --}}
                     <div id="biayaGroup">
-                        <label for="total_biaya" class="block text-sm font-medium text-gray-700">Total Biaya</label>
-                        <input type="text" name="total_biaya_display" id="total_biaya_display" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" value="{{ old('total_biaya') }}">
+                        <x-input
+                            name="total_biaya_display"
+                            label="Total Biaya"
+                            value="{{ old('total_biaya') }}"
+                            id="total_biaya_display" />
                         <input type="hidden" name="total_biaya" id="total_biaya">
                         @error('total_biaya')
-                        <span class="text-red-600 text-sm">{{ $message }}</span>
+                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    <!-- Tanggal Deklarasi -->
-                    <div>
-                        <label for="tanggal_deklarasi" class="block text-sm font-medium text-gray-700">Tanggal Deklarasi</label>
-                        <input type="date" name="tanggal_deklarasi" id="tanggal_deklarasi" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" value="{{ old('tanggal_deklarasi') }}">
-                        @error('tanggal_deklarasi')
-                        <span class="text-red-600 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
+                    {{-- Uraian --}}
+                    <x-textarea
+                        name="uraian"
+                        label="Uraian"
+                        rows="4"
+                        required
+                        :value="old('uraian')" />
 
-                    <!-- Uraian -->
-                    <div>
-                        <label for="uraian" class="block text-sm font-medium text-gray-700">Uraian</label>
-                        <textarea name="uraian" id="uraian" rows="4" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('uraian') }}</textarea>
-                        @error('uraian')
-                        <span class="text-red-600 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
+
+                    {{-- PR --}}
+                    <x-input
+                        name="pr"
+                        label="Nomor Purchase Request (PR)"
+                        :value="old('pr')"
+                        required />
+
+                    {{-- PO --}}
+                    <x-input
+                        name="po"
+                        label="Nomor Purchase Order (PO)"
+                        type="date"
+                        :value="old('po')"
+                        required />
+
+                    {{-- SES --}}
+                    <x-input
+                        name="ses"
+                        label="Nomor Service Entry Sheet (SES)"
+                        :value="old('ses')"
+                        required />
+
+                    {{-- Tanggal Deklarasi --}}
+                    <x-input
+                        name="tanggal_deklarasi"
+                        label="Tanggal Deklarasi"
+                        type="date"
+                        :value="old('tanggal_deklarasi')"
+                        required />
+
+                    {{-- Uraian --}}
+                    <x-textarea
+                        name="uraian"
+                        label="Uraian"
+                        rows="4"
+                        required
+                        :value="old('uraian')" />
                 </div>
 
                 {{-- Tombol --}}
@@ -105,7 +135,6 @@
             }
         }
 
-        // Format rupiah seperti biasa
         displayInput.addEventListener('input', function(e) {
             let value = this.value.replace(/[^,\d]/g, '').toString();
             let split = value.split(',');
@@ -125,10 +154,7 @@
             hiddenInput.value = cleanValue;
         });
 
-        // Jalankan saat halaman dibuka & saat status diganti
         statusSelect.addEventListener('change', handleStatusChange);
         window.addEventListener('DOMContentLoaded', handleStatusChange);
     </script>
-
-
 </x-app-layout>

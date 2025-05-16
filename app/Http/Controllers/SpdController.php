@@ -107,6 +107,9 @@ class SpdController extends Controller
                     'spd_id' => $spd->id,
                     'user_id' => Auth::id(),
                     'total_biaya' => $request->total_biaya,
+                    'pr' => $request->pr,
+                    'po' => $request->po,
+                    'ses' => $request->ses,
                     'tanggal_deklarasi' => $request->tanggal_deklarasi,
                     'uraian' => $request->uraian,
                 ]);

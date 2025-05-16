@@ -14,6 +14,9 @@ class Dpd extends Model
         'spd_id',
         'user_id',
         'total_biaya',
+        'pr', 
+        'po',
+        'ses',
         'tanggal_deklarasi',
         'uraian',
     ];

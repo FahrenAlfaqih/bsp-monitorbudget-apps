@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('periode_anggaran', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('nama_periode');
             $table->date('mulai');
             $table->date('berakhir');

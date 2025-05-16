@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
             'email' => 'hcm@admindept.com',
         ], [
             'name' => 'Human Capital Management',
-            'password' => Hash::make('inunghcm'),
+            'password' => Hash::make('hcmadmindept'),
             'role' => 'admindept_hcm',
         ]);
 
