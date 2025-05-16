@@ -113,7 +113,6 @@
 
                     </div>
 
-                    {{-- Action Buttons --}}
                     <div class="mt-4">
                         @if ($periodeTerpilih->status === 'ditutup')
                         <a href="{{ route('rancangan.index') }}"

@@ -125,7 +125,7 @@
                             </td>
                             <td class="py-3 px-4 text-sm">{{ $r->catatan ?? 'Tidak ada catatan' }}</td>
                             <td class="py-3 px-4 text-sm">
-                                @if(auth()->user()->role === 'admindept')
+                                @if(auth()->user()->role === 'admindept' || auth()->user()->role === 'admindept_hcm')
                                 @if($r->status === 'disetujui')
                                 <button class="inline-block px-3 py-1 text-sm bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed" disabled>
                                     Edit

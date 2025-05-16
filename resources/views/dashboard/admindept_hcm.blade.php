@@ -43,6 +43,29 @@
                                 <h4 class="text-lg font-bold mb-2">{{ $item->nama_periode }}</h4>
                                 <p class="text-sm text-gray-600">Mulai: {{ \Carbon\Carbon::parse($item->mulai)->format('d M Y') }}</p>
                                 <p class="text-sm text-gray-600">Berakhir: {{ \Carbon\Carbon::parse($item->berakhir)->format('d M Y') }}</p>
+                                @if ($periodeTerpilih->sudahMengajukan)
+                                <div class="mt-2 text-sm">
+                                    @if ($periodeTerpilih->statusPengajuan === 'menunggu')
+                                    <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
+                                        <span>
+                                            Menunggu Persetujuan
+                                        </span>
+                                    </p>
+                                    @elseif ($periodeTerpilih->statusPengajuan === 'disetujui')
+                                    <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
+                                        <span>
+                                            Disetujui
+                                        </span>
+                                    </p>
+                                    @elseif ($periodeTerpilih->statusPengajuan === 'ditolak')
+                                    <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
+                                        <span>
+                                            Ditolak
+                                        </span>
+                                    </p>
+                                    @endif
+                                </div>
+                                @endif
                                 <p class="mt-2 text-sm">
                                     Status:
                                     <span class="inline-block px-2 py-1 rounded-full text-white 

@@ -135,7 +135,7 @@ class AdminDeptController extends Controller
      *
      * @return void akan mengembalikan data untuk kebutuhan chart ke views dashboard/admindept_hcm
      */
-    public function dashboardAdminHCM()
+    public function dashboardAdminHCM(Request $request)
     {
         if (Auth::user()->role === 'tmhcm') {
             $rancangan = RancanganAnggaran::with(['departemen', 'periode'])->get();
@@ -154,11 +154,24 @@ class AdminDeptController extends Controller
 
         PeriodeAnggaran::autoUpdateStatus();
 
+        $user = Auth::user();
+        $semuaPeriode = PeriodeAnggaran::orderBy('mulai', 'desc')->get();
+
+        $periodeIdDipilih = $request->get('periode_id') ?? $semuaPeriode->first()?->id;
+        $periodeTerpilih = PeriodeAnggaran::find($periodeIdDipilih);
+        $pengajuan = RancanganAnggaran::where('departemen_id', $user->departemen->id)
+            ->where('periode_id', $periodeTerpilih->id)
+            ->latest()
+            ->first();
+
+        $periodeTerpilih->sudahMengajukan = $pengajuan ? true : false;
+        $periodeTerpilih->statusPengajuan = $pengajuan->status ?? null;
+
         $totalSpd = Spd::count();
         $totalDpd = Dpd::count();
         $spdDitolak = Spd::where('status', 'ditolak')->count();
         $spdDisetujui = Spd::where('status', 'disetujui')->count();
         $spdDiajukan = Spd::where('status', 'diajukan')->count();
-        return view('dashboard.admindept_hcm', compact('rancangan', 'periodeAktif', 'totalSpd', 'totalDpd', 'spdDitolak', 'spdDisetujui', 'spdDiajukan'));
+        return view('dashboard.admindept_hcm', compact('rancangan', 'periodeTerpilih', 'periodeAktif', 'totalSpd', 'totalDpd', 'spdDitolak', 'spdDisetujui', 'spdDiajukan'));
     }
 }
