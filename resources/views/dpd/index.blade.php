@@ -104,6 +104,7 @@
                             <th class="py-3 px-4 text-sm font-medium">Tanggal Deklarasi</th>
                             <th class="py-3 px-4 text-sm font-medium">Total Biaya</th>
                             <th class="py-3 px-4 text-sm font-medium">Uraian</th>
+                            <th class="py-3 px-4 text-sm font-medium">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -114,9 +115,15 @@
                             <td class="py-3 px-4 text-sm">{{ $dpd->nama ?? 'N/A' }}</td>
                             <td class="py-3 px-4 text-sm">{{ \Carbon\Carbon::parse($dpd->tanggal_deklarasi)->format('d M Y') }}</td>
                             <td class="py-3 px-4 text-sm">Rp {{ number_format((float) $dpd->total_biaya, 1, ',', '.') }}</td>
-                            <td class="py-3 px-4 text-sm">{{ $dpd->uraian ?? 'N/A' }}</td
-                                </tr>
-                            @endforeach
+                            <td class="py-3 px-4 text-sm">{{ $dpd->uraian ?? 'N/A' }}</td>
+                            <td class="py-3 px-4 text-sm">
+                                <a href="{{ route('dpd.show', $dpd->id) }}" class="text-blue-600 hover:text-blue-800 font-medium">
+                                    Detail Biaya
+                                </a>
+                            </td>
+
+                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>

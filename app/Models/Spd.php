@@ -46,4 +46,8 @@ class Spd extends Model
     {
         return $this->belongsTo(PeriodeAnggaran::class, 'periode_id');
     }
+    public function details()
+    {
+        return $this->hasMany(SpdDetail::class, 'spd_id');
+    }
 }

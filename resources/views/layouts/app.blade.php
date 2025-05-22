@@ -20,7 +20,7 @@
     <!-- Select2 JS (sebelum </body>) -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+    <script src="//unpkg.com/alpinejs" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/typewriter-effect@2.18.0/dist/core.js"></script>
 
 
@@ -51,7 +51,7 @@
                         :active="request()->routeIs('spd.index')"
                         class="w-full px-4 py-2 text-left rounded-md 
                        {{ request()->routeIs('spd.index') ? 'bg-blue-500 text-white' : 'text-gray-700' }}">
-                        Data SPD
+                        Pelaporan SPD
                     </x-nav-link>
                     <x-nav-link :href="route('dpd.index')"
                         :active="request()->routeIs('dpd.index')"
@@ -82,7 +82,7 @@
                         :active="request()->routeIs('periode.index')"
                         class="w-full px-4 py-2 text-left rounded-md 
                        {{ request()->routeIs('periode.index') ? 'bg-blue-500 text-white' : 'text-gray-700' }}">
-                        Data Periode
+                        Data Periode Pengajuan
                     </x-nav-link>
                     <x-nav-link :href="route('rancangan.index')"
                         :active="request()->routeIs('rancangan.index')"
@@ -101,7 +101,7 @@
                         :active="request()->routeIs('spd.pengajuan')"
                         class="w-full px-4 py-2 text-left rounded-md
                         {{ request()->routeIs('spd.pengajuan') ? 'bg-blue-500 text-white' : 'text-gray-700' }}">
-                        Pengajuan SPD
+                        Ajuan Pelaporan SPD
                     </x-nav-link>
                     @endif
                     @endif

@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Pengajuan Surat Perjalanan Dinas
+                Pengajuan Pelaporan Surat Perjalanan Dinas
             </h2>
         </div>
     </x-slot>
@@ -12,7 +12,7 @@
 
         {{-- Panduan Pengelolaan Pengajuan SPD --}}
         <div class="bg-gray-200 text-gray-800 p-4 mb-6 rounded-lg border border-gray-300">
-            <h3 class="font-semibold mb-2 text-base">Panduan Pengelolaan Pengajuan SPD</h3>
+            <h3 class="font-semibold mb-2 text-base">Panduan Pengelolaan Pengajuan Pelaporan SPD</h3>
             <ul class="list-disc list-inside text-sm space-y-1">
                 <li><strong>Status SPD:</strong>
                     <ul class="list-disc list-inside ml-5">
@@ -28,7 +28,7 @@
         </div>
 
         <div class="bg-white p-6 shadow-md rounded-lg mb-6">
-            <h3 class="font-semibold text-lg text-gray-800 mb-4">Filter Pengajuan SPD</h3>
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Filter Pengajuan Pelaporan SPD</h3>
             <form action="{{ route('spd.pengajuan') }}" method="GET" class="flex flex-wrap gap-3 sm:gap-4 items-end">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
@@ -106,7 +106,7 @@
                                 <!-- Aksi berdasarkan status SPD -->
                                 @if($spd->status == 'diajukan')
                                 <a href="{{ route('spd.editStatus', $spd->id) }}" class="inline-block px-6 py-2.5 text-white bg-blue-600 hover:bg-blue-700 font-medium text-sm rounded-lg shadow-md transition">
-                                    Edit Status
+                                    Persetujuan
                                 </a>
                                 @elseif($spd->status == 'disetujui')
                                 <a href="{{ route('dpd.create', ['spd' => $spd->id]) }}" class="inline-block px-4 py-2 text-sm bg-green-500 text-white rounded-md hover:bg-green-600">

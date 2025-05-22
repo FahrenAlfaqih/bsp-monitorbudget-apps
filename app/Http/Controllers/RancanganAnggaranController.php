@@ -8,6 +8,7 @@ use App\Models\PeriodeAnggaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
+use App\Events\AnggaranDisetujui;
 
 class RancanganAnggaranController extends Controller
 {
@@ -112,16 +113,22 @@ class RancanganAnggaranController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
+
+        $rancangan = RancanganAnggaran::findOrFail($id);
+
         $request->validate([
             'status' => 'required|in:menunggu,disetujui,ditolak',
             'catatan' => $request->status === 'ditolak' ? 'required|string' : 'nullable|string'
         ]);
 
-        $rancangan = RancanganAnggaran::findOrFail($id);
         $rancangan->update([
             'status' => $request->status,
             'catatan' => $request->catatan
         ]);
+
+        if ($request->status === 'disetujui') {
+            event(new AnggaranDisetujui($rancangan));
+        }
 
         Alert::success('Berhasil', 'Status berhasil diperbarui.');
         return redirect()->route('rancangan.index');

@@ -55,30 +55,40 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                     <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
                         <h4 class="text-lg font-bold mb-2">Total Anggaran Perjalanan Dinas</h4>
-                        <p class="text-lg font-semibold text-green-600">Rp {{ number_format($periodeTerpilih->total_anggaran_disetujui, 0, ',', '.') }}</p>
+                        <p class="text-lg font-semibold text-green-600">
+                            Rp {{ number_format($periodeTerpilih->totalAnggaranDisetujui ?? 0, 0, ',', '.') }}
+                        </p>
                     </div>
                     <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
                         <h4 class="text-lg font-bold mb-2">Total Pengeluaran</h4>
-                        <p class="text-lg font-semibold text-red-600">Rp {{ number_format($periodeTerpilih->total_pengeluaran, 0, ',', '.') }}</p>
+                        <p class="text-lg font-semibold text-red-600">
+                            Rp {{ number_format($periodeTerpilih->total_pengeluaran ?? 0, 0, ',', '.') }}
+                        </p>
                     </div>
                     <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
                         <h4 class="text-lg font-bold mb-2">Sisa Anggaran</h4>
-                        <p class="text-lg font-semibold text-yellow-600">Rp {{ number_format($periodeTerpilih->sisa_anggaran, 0, ',', '.') }}</p>
+                        <p class="text-lg font-semibold text-yellow-600">
+                            Rp {{ number_format($periodeTerpilih->sisa_anggaran ?? 0, 0, ',', '.') }}
+                        </p>
                     </div>
                 </div>
+
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                     {{-- Top Karyawan --}}
                     <div class="bg-white rounded-2xl shadow-lg p-6">
                         <h4 class="text-lg font-semibold text-black-700 mb-4">Top Karyawan dengan Biaya Dinas Tertinggi</h4>
                         <div class="text-sm text-gray-700 space-y-2">
-                            @foreach($topKaryawan as $karyawan)
+                            @forelse($topKaryawan as $karyawan)
                             <div class="flex justify-between">
                                 <span class="font-medium">{{ $loop->iteration }}. {{ $karyawan->nama_pegawai }}</span>
                                 <span class="text-gray-800 font-semibold">Rp {{ number_format($karyawan->total_biaya, 0, ',', '.') }}</span>
                             </div>
-                            @endforeach
+                            @empty
+                            <p class="text-gray-500 italic">Data tidak tersedia.</p>
+                            @endforelse
                         </div>
+
                     </div>
 
 
@@ -86,12 +96,14 @@
                     <div class="bg-white rounded-2xl shadow-lg p-6">
                         <h4 class="text-lg font-semibold text-black-700 mb-4">Top Budget Departemen</h4>
                         <ul class="text-sm text-gray-700 space-y-2">
-                            @foreach($topBudget as $budget)
+                            @forelse($topBudget as $budget)
                             <div class="flex justify-between">
                                 <span class="font-medium">{{ $loop->iteration }}. {{ $budget->nama_pegawai }}</span>
                                 <span class="text-gray-800 font-semibold">Rp {{ number_format($budget->total_biaya, 0, ',', '.') }}</span>
                             </div>
-                            @endforeach
+                            @empty
+                            <p class="text-gray-500 italic">Data tidak tersedia.</p>
+                            @endforelse
                         </ul>
                     </div>
 
@@ -99,12 +111,14 @@
                     <div class="bg-white rounded-2xl shadow-lg p-6">
                         <h4 class="text-lg font-semibold text-black-700 mb-4">Tujuan Dinas Paling Sering</h4>
                         <ul class="space-y-2 text-sm text-gray-700">
-                            @foreach($topTujuanDinas as $tujuan)
+                            @forelse($topTujuanDinas as $tujuan)
                             <div class="flex justify-between">
                                 <span class="font-medium">{{ $loop->iteration }}. {{ $tujuan->tujuan }}</span>
                                 <span class="text-gray-800 font-semibold">{{ $tujuan->jumlah_tujuan }} kali</span>
                             </div>
-                            @endforeach
+                            @empty
+                            <p class="text-gray-500 italic">Data tidak tersedia.</p>
+                            @endforelse
                         </ul>
                     </div>
                 </div>
@@ -115,49 +129,49 @@
                         @foreach($periodeAktif as $item)
                         <div class="bg-white rounded-xl shadow p-6 h-full flex flex-col justify-between">
                             <div>
-                                <h4 class="text-lg font-bold mb-2">{{ $item->nama_periode }}</h4>
-                                <p class="text-sm text-gray-600">Mulai: {{ \Carbon\Carbon::parse($item->mulai)->format('d M Y') }}</p>
-                                <p class="text-sm text-gray-600">Berakhir: {{ \Carbon\Carbon::parse($item->berakhir)->format('d M Y') }}</p>
-                                @if ($periodeTerpilih->sudahMengajukan)
+                                <h4 class="text-lg font-bold mb-2">{{ $item->nama_periode ?? '-' }}</h4>
+                                <p class="text-sm text-gray-600">
+                                    Mulai: {{ $item->mulai ? \Carbon\Carbon::parse($item->mulai)->format('d M Y') : '-' }}
+                                </p>
+                                <p class="text-sm text-gray-600">
+                                    Berakhir: {{ $item->berakhir ? \Carbon\Carbon::parse($item->berakhir)->format('d M Y') : '-' }}
+                                </p>
+
+                                @if($periodeTerpilih && ($periodeTerpilih->sudahMengajukan ?? false))
                                 <div class="mt-2 text-sm">
                                     @if ($periodeTerpilih->statusPengajuan === 'menunggu')
                                     <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
-                                        <span>
-                                            Menunggu Persetujuan
-                                        </span>
+                                        <span>Menunggu Persetujuan</span>
                                     </p>
                                     @elseif ($periodeTerpilih->statusPengajuan === 'disetujui')
                                     <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
-                                        <span>
-                                            Disetujui
-                                        </span>
+                                        <span>Disetujui</span>
                                     </p>
                                     @elseif ($periodeTerpilih->statusPengajuan === 'ditolak')
                                     <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
-                                        <span>
-                                            Ditolak
-                                        </span>
+                                        <span>Ditolak</span>
                                     </p>
                                     @endif
                                 </div>
                                 @endif
+
                                 <p class="mt-2 text-sm">
                                     Status:
-                                    <span class="inline-block px-2 py-1 rounded-full text-white 
-                        {{ $item->status === 'dibuka' ? 'bg-green-500' : 'bg-red-500' }}">
-                                        {{ ucfirst($item->status) }}
+                                    <span class="inline-block px-2 py-1 rounded-full text-white
+                            {{ ($item->status ?? '') === 'dibuka' ? 'bg-green-500' : 'bg-red-500' }}">
+                                        {{ ucfirst($item->status ?? 'Tidak diketahui') }}
                                     </span>
                                 </p>
                             </div>
 
                             <div class="mt-4">
-                                @if ($item->sudahMengajukan)
+                                @if($item->sudahMengajukan ?? false)
                                 <a href="{{ route('rancangan.index') }}"
                                     class="inline-block w-full px-6 py-3 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 transition duration-200 ease-in-out transform hover:scale-105 text-center">
                                     Lihat Pengajuan Anggaran
                                 </a>
                                 @else
-                                <a href="{{ route('rancangan.create', ['periode_id' => $item->id]) }}"
+                                <a href="{{ route('rancangan.create', ['periode_id' => $item->id ?? 0]) }}"
                                     class="inline-block w-full px-6 py-3 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition duration-200 ease-in-out transform hover:scale-105 text-center">
                                     Ajukan Anggaran
                                 </a>
@@ -168,12 +182,12 @@
 
                         @if($periodeAktif->isEmpty())
                         <div class="bg-white rounded-xl shadow p-6 text-center col-span-full">
-                            <p class="text-gray-500">Tidak ada periode anggaran yang aktif untuk pengajuan.</p>
+                            <p class="text-gray-500 italic">Tidak ada periode anggaran yang aktif untuk pengajuan.</p>
                         </div>
                         @endif
                     </div>
-
                 </div>
+
             </div>
         </div>
 

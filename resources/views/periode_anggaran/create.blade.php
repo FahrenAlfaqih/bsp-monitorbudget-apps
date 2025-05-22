@@ -14,8 +14,8 @@
             <h3 class="font-semibold mb-2">Panduan Pengisian Periode Anggaran</h3>
             <ul class="list-disc list-inside text-sm space-y-1">
                 <li><strong>Nama Periode:</strong> Masukkan nama yang jelas, misalnya "Periode Anggaran 2025".</li>
-                <li><strong>Tanggal Mulai dan Tanggal Berakhir:</strong> Isi menggunakan format <span class="font-mono">mm/dd/yyyy</span> (bulan/hari/tahun).</li>
-                <li>Pastikan tanggal mulai lebih awal dari tanggal berakhir.</li>
+                <li><strong>Tanggal Mulai Pengajuan dan Tanggal Berakhir Pengajuan:</strong> Isi menggunakan format <span class="font-mono">mm/dd/yyyy</span> (bulan/hari/tahun).</li>
+                <li>Pastikan tanggal mulai pengajuan lebih awal dari tanggal berakhir pengajuan .</li>
                 <li>Status periode anggaran akan berubah otomatis menjadi "Ditutup" ketika tanggal berakhir sudah melewati tanggal sekarang.</li>
             </ul>
         </div>
@@ -28,11 +28,11 @@
             </div>
 
             <div class="mb-4">
-                <x-input name="mulai" label="Tanggal Mulai" type="date" required />
+                <x-input name="mulai" label="Tanggal Mulai Pengajuan" type="date" required />
             </div>
 
             <div class="mb-4">
-                <x-input name="berakhir" label="Tanggal Berakhir" type="date" required />
+                <x-input name="berakhir" label="Tanggal Berakhir Pengajuan" type="date" required />
             </div>
 
             <div class="flex justify-end mt-8">

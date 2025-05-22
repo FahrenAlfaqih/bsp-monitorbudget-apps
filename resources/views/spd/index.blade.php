@@ -2,25 +2,25 @@
     <x-slot name="header">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Daftar Surat Perjalanan Dinas
+                Pelaporan Surat Perjalanan Dinas
             </h2>
         </div>
     </x-slot>
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-gray-200 text-gray-800 p-4 mb-6 rounded-lg border border-gray-300">
-            <h3 class="font-semibold mb-2">Panduan Pengajuan Surat Perjalanan Dinas</h3>
+            <h3 class="font-semibold mb-2">Panduan Pelaporan Surat Perjalanan Dinas</h3>
             <ul class="list-disc list-inside text-sm space-y-1">
-                <li><strong>Tata Cara Pengajuan SPD:</strong></li>
+                <li><strong>Tata Cara Pelaporan SPD:</strong></li>
                 <ul class="list-disc list-inside ml-5">
-                    <li>Pastikan SPD yang akan diajukan sudah tersedia di table, jika belum klik <strong>Tambah SPD</strong></li>
-                    <li>Pilih list SPD karyawan yang akan diajukan ke finance (boleh lebih dari satu)</li>
-                    <li>Klik <strong>Ajukan SPD ke Finance</strong> hingga status berubah menjadi <strong>Diajukan</strong></li>
-                    <li>Anda bisa melakukan pengajuan SPD kembali jika status ditolak</li>
-                    <li>SPD yang sudah diterima tidak dapat diajukan kembali</li>
+                    <li>Pastikan SPD yang akan dilaporkan sudah tersedia di table, jika belum klik <strong>Tambah SPD</strong></li>
+                    <li>Pilih list SPD karyawan yang akan dilaporkan ke finance (boleh lebih dari satu)</li>
+                    <li>Klik <strong>Ajukan Laporan SPD ke Finance</strong> hingga status berubah menjadi <strong>diajukan</strong></li>
+                    <li>Anda bisa melakukan Pelaporan SPD kembali jika status ditolak</li>
+                    <li>SPD yang sudah diterima tidak dapat dilaporkan kembali</li>
 
                 </ul>
-                <li><strong>Status Pengajuan:</strong>
+                <li><strong>Status Pelaporan:</strong>
                     <ul class="list-disc list-inside ml-5">
                         <li>Secara default, status akan <strong>Menunggu</strong> selama anda belum mengajukan SPD</li>
                         <li>Jika status <strong>Ditolak</strong> maka akan menampilkan catatan dan tanggal deklarasi oleh Departemen Finance</li>
@@ -31,7 +31,7 @@
         </div>
 
         <div class="bg-white p-6 shadow-md rounded-lg mb-6">
-            <h3 class="font-semibold text-lg text-gray-800 mb-4">Filter Pengajuan SPD</h3>
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Filter Pelaporan SPD</h3>
             <form action="{{ route('dpd.index') }}" method="GET" class="flex flex-wrap gap-3 sm:gap-4 items-end">
                 {{-- Filter Departemen --}}
                 <div>
@@ -98,17 +98,17 @@
                 </div>
             </form>
         </div>
-        
+
         <!-- Card Daftar SPD -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
             <form action="{{ route('spd.ajukan') }}" method="POST">
                 @csrf
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-semibold text-gray-700">Daftar Surat Perjalanan Dinas</h3>
+                    <h3 class="text-lg font-semibold text-gray-700">Daftar Rekapan Surat Perjalanan Dinas</h3>
                     <div class="flex gap-2 mb-4">
-                        <a href="{{ route('spd.create') }}" class="inline-block px-6 py-2.5 text-white bg-blue-600 hover:bg-blue-700 font-medium text-sm rounded-lg shadow-md transition">Tambah SPD</a>
+                        <a href="{{ route('spd.create') }}" class="inline-block px-6 py-2.5 text-white bg-blue-600 hover:bg-blue-700 font-medium text-sm rounded-lg shadow-md transition">Rekap SPD Karyawan</a>
                         <button type="submit" class="px-6 py-2.5 text-white bg-green-600 hover:bg-green-700 font-medium text-sm rounded-lg shadow-md transition">
-                            Ajukan SPD ke Finance
+                            Ajukan Laporan SPD ke Finance
                         </button>
                     </div>
                 </div>
@@ -134,6 +134,7 @@
                                 <th class="py-3 px-4 text-sm font-medium">Status</th>
                                 <th class="py-3 px-4 text-sm font-medium">Catatan</th>
                                 <th class="py-3 px-4 text-sm font-medium">Tanggal Deklarasi</th>
+                                <th class="py-3 px-4 text-sm font-medium">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -163,6 +164,16 @@
                                 </td>
                                 <td class="py-3 px-4 text-sm">{{ $spd->uraian }}</td>
                                 <td class="py-3 px-4 text-sm">{{ \Carbon\Carbon::parse($spd->tanggal_deklarasi)->format('d M Y') }}</td>
+                                <td class="py-3 px-4 text-sm">
+                                    <a href="{{ route('spd.show', $spd->id) }}" class="text-green-600 hover:text-green-800 font-medium">
+                                        Detail
+                                    </a>
+                                    <a href="{{ route('spd.edit', $spd->id) }}" class="text-blue-600 hover:text-blue-800 font-medium">
+                                        Edit
+                                    </a>
+
+                                </td>
+
                             </tr>
                             @endforeach
                         </tbody>
@@ -171,7 +182,7 @@
             </form>
         </div>
 
-        
+
     </div>
     <script>
         document.getElementById('checkAll').addEventListener('change', function() {

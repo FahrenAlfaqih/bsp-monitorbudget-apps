@@ -11,13 +11,15 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\Log;
+
 
 
 class SpdController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Spd::with(['departemen', 'user']);
+        $query = Spd::with(['departemen', 'user', 'details']);
 
         if ($request->filled('departemen')) {
             $query->where('departemen_id', $request->departemen);
@@ -42,6 +44,14 @@ class SpdController extends Controller
 
         return view('spd.index', compact('spds', 'departemenList'));
     }
+
+    public function show(Spd $spd)
+    {
+        $spd->load('details', 'departemen');
+
+        return view('spd.show', compact('spd'));
+    }
+
 
 
 
@@ -80,9 +90,11 @@ class SpdController extends Controller
         if ($spd->status !== 'diajukan') {
             return redirect()->route('spd.pengajuan')->with('error', 'SPD sudah diproses.');
         }
+        $spd->load('details');
 
         return view('spd.update-status', compact('spd'));
     }
+
 
     public function updateStatus(Request $request, Spd $spd)
     {
@@ -146,11 +158,17 @@ class SpdController extends Controller
             'tanggal_kembali' => 'required|date|after_or_equal:tanggal_berangkat',
             'jenis_transport' => 'nullable|string',
             'nama_transport' => 'nullable|string',
+
+            // validasi untuk detail biaya
+            'details' => 'required|array|min:1',
+            'details.*.jenis_biaya' => 'required|string',
+            'details.*.nominal' => 'required|numeric|min:0',
+            'details.*.keterangan' => 'nullable|string',
         ]);
 
         $pegawai = Pegawai::find($validated['pegawai_id']);
 
-        Spd::create([
+        $spd = Spd::create([
             'departemen_id' => $validated['departemen_id'],
             'pegawai_id' => $pegawai->id,
             'periode_id' => $validated['periode_id'],
@@ -165,8 +183,83 @@ class SpdController extends Controller
             'jenis_transport' => $validated['jenis_transport'],
             'nama_transport' => $validated['nama_transport'],
         ]);
-        Alert::success('Berhasil', 'Surat Perjalanan Dinas berhasil ditambahkan!');
 
+        // Simpan detail biaya
+        foreach ($validated['details'] as $detail) {
+            $spd->details()->create([
+                'jenis_biaya' => $detail['jenis_biaya'],
+                'nominal' => $detail['nominal'],
+                'keterangan' => $detail['keterangan'] ?? null,
+            ]);
+        }
+
+        Alert::success('Berhasil', 'Surat Perjalanan Dinas dan rincian biaya berhasil ditambahkan!');
+
+        return redirect()->route('spd.index');
+    }
+
+    public function edit(Spd $spd)
+    {
+        $departemen = Departemen::all();
+        $pegawais = Pegawai::all();
+        $periodes = PeriodeAnggaran::orderBy('mulai', 'desc')->first();
+        $spd->load('details');
+
+        // Hapus 'details' dari compact karena tidak ada variabel $details
+        return view('spd.edit', compact('spd', 'departemen', 'pegawais', 'periodes'));
+    }
+
+
+    public function update(Request $request, Spd $spd)
+    {
+        $validated = $request->validate([
+            'departemen_id' => 'required|exists:departemen,id',
+            'pegawai_id' => 'required|exists:pegawai,id',
+            'periode_id' => 'required|exists:periode_anggaran,id',
+            'nomor_spd' => 'required|unique:surat_perjalanan_dinas,nomor_spd,' . $spd->id,
+            'asal' => 'required|string|max:255',
+            'tujuan' => 'required|string|max:255',
+            'kegiatan' => 'nullable|string',
+            'tanggal_berangkat' => 'required|date',
+            'tanggal_kembali' => 'required|date|after_or_equal:tanggal_berangkat',
+            'jenis_transport' => 'nullable|string',
+            'nama_transport' => 'nullable|string',
+
+            'details' => 'required|array|min:1',
+            'details.*.jenis_biaya' => 'required|string',
+            'details.*.nominal' => 'required|numeric|min:0',
+            'details.*.keterangan' => 'nullable|string',
+        ]);
+
+        $pegawai = Pegawai::find($validated['pegawai_id']);
+
+        $spd->update([
+            'departemen_id' => $validated['departemen_id'],
+            'pegawai_id' => $pegawai->id,
+            'periode_id' => $validated['periode_id'],
+            'user_id' => Auth::id(),
+            'nomor_spd' => $validated['nomor_spd'],
+            'nama_pegawai' => $pegawai->nama_pegawai,
+            'asal' => $validated['asal'],
+            'tujuan' => $validated['tujuan'],
+            'kegiatan' => $validated['kegiatan'],
+            'tanggal_berangkat' => $validated['tanggal_berangkat'],
+            'tanggal_kembali' => $validated['tanggal_kembali'],
+            'jenis_transport' => $validated['jenis_transport'],
+            'nama_transport' => $validated['nama_transport'],
+        ]);
+
+        $spd->details()->delete();
+
+        foreach ($validated['details'] as $detail) {
+            $spd->details()->create([
+                'jenis_biaya' => $detail['jenis_biaya'],
+                'nominal' => $detail['nominal'],
+                'keterangan' => $detail['keterangan'] ?? null,
+            ]);
+        }
+
+        Alert::success('Berhasil', 'Surat Perjalanan Dinas berhasil diupdate!');
         return redirect()->route('spd.index');
     }
 }

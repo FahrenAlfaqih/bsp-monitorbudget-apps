@@ -8,6 +8,8 @@ use App\Models\Spd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
+
 
 class DpdController extends Controller
 {
@@ -54,36 +56,49 @@ class DpdController extends Controller
                 'deklarasi_perjalanan_dinas.*',
                 'spd.nomor_spd',
                 'spd.nama_pegawai',
-                'spd.tanggal_berangkat', 
-                'departemen.nama'
+                'spd.tanggal_berangkat',
+                'departemen.nama as departemen_nama',
+                'spd.id as spd_id'
             );
 
+        // Filter sesuai request...
         if ($request->filled('nama_pegawai')) {
             $query->where('spd.nama_pegawai', 'like', '%' . $request->nama_pegawai . '%');
         }
-
         if ($request->filled('departemen')) {
             $query->where('departemen.id', $request->departemen);
         }
-
         if ($request->filled('tanggal_deklarasi')) {
             $query->where('deklarasi_perjalanan_dinas.tanggal_deklarasi', $request->tanggal_deklarasi);
         }
-
-        if ($request->filled('tgl_dinas_awal')) {
-            $query->where('spd.tanggal_berangkat', $request->tgl_dinas_awal);
-        }
-
         if ($request->filled('tgl_dinas_awal') && $request->filled('tgl_dinas_akhir')) {
             $query->whereBetween('spd.tanggal_berangkat', [$request->tgl_dinas_awal, $request->tgl_dinas_akhir]);
+        } elseif ($request->filled('tgl_dinas_awal')) {
+            $query->where('spd.tanggal_berangkat', '>=', $request->tgl_dinas_awal);
         }
 
         $deklarasi = $query->get();
 
+        $spdIds = $deklarasi->pluck('spd_id')->toArray();
+
+        $details = DB::table('spd_detail')
+            ->whereIn('spd_id', $spdIds)
+            ->get()
+            ->groupBy('spd_id');
+
         $departemenList = DB::table('departemen')->get();
 
-        return view('dpd.index', compact('deklarasi', 'departemenList'));
+        return view('dpd.index', compact('deklarasi', 'departemenList', 'details'));
     }
+
+    public function show($id)
+    {
+        $dpd = Dpd::with('spd.details', 'spd.departemen')->findOrFail($id);
+
+        return view('dpd.show', compact('dpd'));
+    }
+
+
     public function edit($id)
     {
         $deklarasi = Dpd::findOrFail($id);
