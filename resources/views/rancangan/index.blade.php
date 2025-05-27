@@ -1,11 +1,5 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Rancangan Anggaran Biaya Perjalanan Dinas
-            </h2>
-        </div>
-    </x-slot>
+
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <!-- Panduan Pengelolaan Rancangan Anggaran -->
@@ -140,12 +134,12 @@
                                 @elseif(auth()->user()->role === 'tmhcm')
                                 @if($r->status === 'disetujui')
                                 <button class="inline-block px-3 py-1 text-sm bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed" disabled>
-                                    Edit
+                                    Persetujuan
                                 </button>
                                 @else
                                 <a href="{{ route('rancangan.editStatus', $r->id) }}"
                                     class="inline-block px-3 py-1 text-sm text-white bg-blue-500 hover:bg-blue-600 rounded-lg transition">
-                                    Edit
+                                    Persetujuan 
                                 </a>
                                 @endif
                                 @endif

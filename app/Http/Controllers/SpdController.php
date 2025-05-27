@@ -30,6 +30,9 @@ class SpdController extends Controller
         if ($request->filled('jenis_transport')) {
             $query->where('jenis_transport', $request->jenis_transport);
         }
+        if ($request->filled('nomor_spd')) {
+            $query->where('nomor_spd', $request->nomor_spd);
+        }
 
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('tanggal_berangkat', [$request->start_date, $request->end_date]);
@@ -45,15 +48,13 @@ class SpdController extends Controller
         return view('spd.index', compact('spds', 'departemenList'));
     }
 
+
     public function show(Spd $spd)
     {
         $spd->load('details', 'departemen');
 
         return view('spd.show', compact('spd'));
     }
-
-
-
 
 
     public function ajukan(Request $request)

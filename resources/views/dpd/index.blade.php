@@ -1,13 +1,8 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Data Deklarasi Perjalanan Dinas
-            </h2>
-        </div>
-    </x-slot>
+
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+        @if(auth()->user()->role === 'admindept_hcm')
         <div class="bg-gray-200 text-gray-800 p-4 mb-6 rounded-lg border border-gray-300">
             <h3 class="font-semibold mb-2">Panduan Deklarasi Perjalanan Dinas</h3>
             <ul class="list-disc list-inside text-sm space-y-1">
@@ -24,9 +19,10 @@
                 </ul>
             </ul>
         </div>
+        @endif
 
         <div class="bg-white p-6 shadow-md rounded-lg mb-6">
-            <h3 class="font-semibold text-lg text-gray-800 mb-4">Filter Deklarasi Perjalanan Dinas</h3>
+            <h3 class="font-semibold text-lg text-gray-800 mb-4">Filter DPD</h3>
             <form action="{{ route('dpd.index') }}" method="GET" class="flex flex-wrap gap-4 items-end">
                 {{-- Filter Nama Pegawai --}}
                 <div>
@@ -36,6 +32,7 @@
                         placeholder="Cari nama pegawai...">
                 </div>
 
+                @if(auth()->user()->role === 'admindept_hcm')
                 {{-- Filter Departemen --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
@@ -49,6 +46,7 @@
                         @endforeach
                     </select>
                 </div>
+                @endif
 
                 {{-- Filter Tanggal Deklarasi --}}
                 <div>
@@ -89,7 +87,7 @@
         <!-- Card Daftar DPD -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-semibold text-gray-700">Daftar Deklarasi Perjalanan Dinas</h3>
+                <h3 class="text-lg font-semibold text-gray-700">Daftar DPD</h3>
                 <!-- <a href="{{ route('dpd.create') }}" class="inline-block px-6 py-2.5 text-white bg-blue-600 hover:bg-blue-700 font-medium text-sm rounded-lg shadow-md transition">Tambah DPD</a> -->
             </div>
 
@@ -100,7 +98,6 @@
                         <tr class="bg-gray-200 text-gray-600">
                             <th class="py-3 px-4 text-sm font-medium">Nomor SPD</th>
                             <th class="py-3 px-4 text-sm font-medium">Nama Pegawai</th>
-                            <th class="py-3 px-4 text-sm font-medium">Departemen</th>
                             <th class="py-3 px-4 text-sm font-medium">Tanggal Deklarasi</th>
                             <th class="py-3 px-4 text-sm font-medium">Total Biaya</th>
                             <th class="py-3 px-4 text-sm font-medium">Uraian</th>
@@ -110,15 +107,22 @@
                     <tbody>
                         @foreach ($deklarasi as $dpd)
                         <tr class="border-b hover:bg-gray-50 transition duration-300">
-                            <td class="py-3 px-4 text-sm">{{ $dpd->nomor_spd ?? 'N/A' }}</td>
+                            @if(auth()->user()->role === 'admindept_hcm' || auth()->user()->role === 'tmhcm')
+                            <td class="py-3 px-4 text-sm">
+                                <a href="{{ route('spd.index', ['nomor_spd' => $dpd->nomor_spd]) }}" class="text-blue-600 hover:underline">
+                                    {{ $dpd->nomor_spd ?? 'N/A' }}
+                                </a>
+                                @elseif(auth()->user()->role === 'admindept')
+                            <td class="py-3 px-4 text-sm">{{ $dpd->nomor_spd  ?? 'N/A' }}</td>
+                            @endif
+                            </td>
                             <td class="py-3 px-4 text-sm">{{ $dpd->nama_pegawai  ?? 'N/A' }}</td>
-                            <td class="py-3 px-4 text-sm">{{ $dpd->nama ?? 'N/A' }}</td>
                             <td class="py-3 px-4 text-sm">{{ \Carbon\Carbon::parse($dpd->tanggal_deklarasi)->format('d M Y') }}</td>
                             <td class="py-3 px-4 text-sm">Rp {{ number_format((float) $dpd->total_biaya, 1, ',', '.') }}</td>
                             <td class="py-3 px-4 text-sm">{{ $dpd->uraian ?? 'N/A' }}</td>
                             <td class="py-3 px-4 text-sm">
                                 <a href="{{ route('dpd.show', $dpd->id) }}" class="text-blue-600 hover:text-blue-800 font-medium">
-                                    Detail Biaya
+                                    Detail 
                                 </a>
                             </td>
 

@@ -1,11 +1,5 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Persetujuan Pelaporan Surat Perjalanan Dinas
-            </h2>
-        </div>
-    </x-slot>
+
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-gray-200 text-gray-800 p-4 mb-6 rounded-lg border border-gray-300">

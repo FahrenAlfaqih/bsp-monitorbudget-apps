@@ -1,45 +1,66 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Detail Deklarasi Perjalanan Dinas - {{ $dpd->spd->nomor_spd }}
-        </h2>
-    </x-slot>
+
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white p-6 rounded-lg shadow-md">
             <h3 class="text-lg font-semibold mb-4">Informasi SPD</h3>
-            <table class="min-w-full border border-gray-300 mb-6">
+            <table class="min-w-full border border-gray-300 text-sm mb-6">
                 <tbody>
-                    <tr>
-                        <td class="border px-4 py-2 font-semibold">Nomor SPD</td>
-                        <td class="border px-4 py-2">{{ $dpd->spd->nomor_spd }}</td>
+                    <tr class="border-b">
+                        <th class="border px-4 py-2 text-left w-1/3">Nomor SPD</th>
+                        <td class="border px-4 py-2">{{ $dpd->spd->nomor_spd ?? '-' }}</td>
                     </tr>
-                    <tr>
-                        <td class="border px-4 py-2 font-semibold">Nama Pegawai</td>
-                        <td class="border px-4 py-2">{{ $dpd->spd->nama_pegawai }}</td>
+                    <tr class="border-b bg-gray-50">
+                        <th class="border px-4 py-2 text-left">Nama Pegawai</th>
+                        <td class="border px-4 py-2">{{ $dpd->spd->nama_pegawai ?? '-' }}</td>
                     </tr>
-                    <tr>
-                        <td class="border px-4 py-2 font-semibold">Departemen</td>
+                    <tr class="border-b">
+                        <th class="border px-4 py-2 text-left">Departemen</th>
                         <td class="border px-4 py-2">{{ $dpd->spd->departemen->nama ?? '-' }}</td>
                     </tr>
-                    <tr>
-                        <td class="border px-4 py-2 font-semibold">Tanggal Berangkat</td>
-                        <td class="border px-4 py-2">{{ \Carbon\Carbon::parse($dpd->spd->tanggal_berangkat)->format('d M Y') }}</td>
+                    <tr class="border-b bg-gray-50">
+                        <th class="border px-4 py-2 text-left">Asal</th>
+                        <td class="border px-4 py-2">{{ $dpd->spd->asal ?? '-' }}</td>
+                    </tr>
+                    <tr class="border-b">
+                        <th class="border px-4 py-2 text-left">Tujuan</th>
+                        <td class="border px-4 py-2">{{ $dpd->spd->tujuan ?? '-' }}</td>
+                    </tr>
+                    <tr class="border-b bg-gray-50">
+                        <th class="border px-4 py-2 text-left">Kegiatan</th>
+                        <td class="border px-4 py-2">{{ $dpd->spd->kegiatan ?? '-' }}</td>
+                    </tr>
+                    <tr class="border-b">
+                        <th class="border px-4 py-2 text-left">Tanggal Berangkat</th>
+                        <td class="border px-4 py-2">{{ $dpd->spd->tanggal_berangkat ? \Carbon\Carbon::parse($dpd->spd->tanggal_berangkat)->format('d M Y') : '-' }}</td>
+                    </tr>
+                    <tr class="border-b bg-gray-50">
+                        <th class="border px-4 py-2 text-left">Tanggal Kembali</th>
+                        <td class="border px-4 py-2">{{ $dpd->spd->tanggal_kembali ? \Carbon\Carbon::parse($dpd->spd->tanggal_kembali)->format('d M Y') : '-' }}</td>
+                    </tr>
+                    <tr class="border-b">
+                        <th class="border px-4 py-2 text-left">Jenis Transport</th>
+                        <td class="border px-4 py-2">{{ $dpd->spd->jenis_transport ?? '-' }}</td>
+                    </tr>
+                    <tr class="border-b bg-gray-50">
+                        <th class="border px-4 py-2 text-left">Nama Transport</th>
+                        <td class="border px-4 py-2">{{ $dpd->spd->nama_transport ?? '-' }}</td>
+                    </tr>
+                    <tr class="border-b">
+                        <th class="border px-4 py-2 text-left">Status</th>
+                        <td class="border px-4 py-2">{{ isset($dpd->spd->status) ? ucfirst($dpd->spd->status) : '-' }}</td>
+                    </tr>
+                    <tr class="border-b bg-gray-50">
+                        <th class="border px-4 py-2 text-left">Tanggal Deklarasi</th>
+                        <td class="border px-4 py-2">{{ $dpd->spd->tanggal_deklarasi ? \Carbon\Carbon::parse($dpd->spd->tanggal_deklarasi)->format('d M Y') : '-' }}</td>
                     </tr>
                     <tr>
-                        <td class="border px-4 py-2 font-semibold">Tanggal Kembali</td>
-                        <td class="border px-4 py-2">{{ \Carbon\Carbon::parse($dpd->spd->tanggal_kembali)->format('d M Y') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="border px-4 py-2 font-semibold">Jenis Transport</td>
-                        <td class="border px-4 py-2">{{ $dpd->spd->jenis_transport }}</td>
-                    </tr>
-                    <tr>
-                        <td class="border px-4 py-2 font-semibold">Nama Transport</td>
-                        <td class="border px-4 py-2">{{ $dpd->spd->nama_transport }}</td>
+                        <th class="border px-4 py-2 text-left">Catatan</th>
+                        <td class="border px-4 py-2">{{ $dpd->spd->uraian ?? '-' }}</td>
                     </tr>
                 </tbody>
             </table>
+
 
             <h3 class="text-lg font-semibold mb-4">Rincian Biaya Perjalanan Dinas</h3>
             <table class="min-w-full border border-gray-300 text-sm">
@@ -70,6 +91,9 @@
                     </tr>
                 </tfoot>
             </table>
+            <div class="mt-6">
+                <a href="{{ route('dpd.index') }}" class="inline-block px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg mr-3 transition">Kembali ke DPD</a>
+            </div>
         </div>
     </div>
 </x-app-layout>

@@ -1,35 +1,63 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                PT. Bumi Siak Pusako
-            </h2>
-        </div>
-    </x-slot>
+
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <p id="welcomeText" class="mb-4">Selamat datang, {{ auth()->user()->name }}</p>
+            <p  class="mb-4">Selamat datang, {{ auth()->user()->name }}</p>
 
             <form method="GET" action="{{ route('dashboard.tmhcm') }}" class="flex flex-wrap gap-3 sm:gap-4 items-end">
                 <div>
-                    <label for="periode_id" class="block text-sm font-medium text-gray-700 mb-1">Filter Periode:</label>
                     <select name="periode_id" id="periode_id"
                         class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">-- Semua Periode --</option>
-                        @foreach($periodes as $periode)
+@foreach($periodesDropdown as $periode)
                         <option value="{{ $periode->id }}" {{ request('periode_id') == $periode->id ? 'selected' : '' }}>
                             {{ $periode->nama_periode }}
                         </option>
                         @endforeach
                     </select>
-                    
+
                     <button type="submit"
-                        class="mt-5 text-sm px-4 py-2 border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                        <i class="fas fa-filter mr-1"></i> Filter
+                        class="mt-5 ml-3 text-sm px-4 py-2 border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <i class="fas fa-filter mr-1"></i> Tampilkan
                     </button>
                 </div>
             </form>
+
+            {{-- 1. LINE CHART: Trend Anggaran Periode --}}
+            <div class="bg-white rounded-lg shadow p-4 mb-8 mt-6">
+                <h3 class="font-semibold mb-4">Trend Anggaran Perjalanan Dinas per Periode</h3>
+                <canvas id="trendAnggaranChart" height="100"></canvas>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-4 mb-8 mt-6">
+                <h3 class="font-semibold mb-4">Perbandingan Anggaran Dinas per Departemen per Periode</h3>
+                <canvas id="anggaranGroupedBar" height="100"></canvas>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {{-- 2. PIE CHART: Progress Anggaran per Departemen --}}
+                <div class="bg-white rounded-lg shadow p-4">
+                    <h3 class="font-semibold mb-4">Progress Penggunaan Anggaran Dinas per Departemen</h3>
+                    <canvas id="progressAnggaranPie" height="300"></canvas>
+                </div>
+
+                <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- 3. BAR CHART: Penggunaan Anggaran Departemen Terbesar --}}
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <h3 class="font-semibold mb-4"> Departemen dengan Penggunaan Anggaran Dinas Tertinggi</h3>
+                        <canvas id="topDepartemenBar" height="300"></canvas>
+                    </div>
+
+                    {{-- 4. BAR CHART: Karyawan dengan Biaya Terbesar --}}
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <h3 class="font-semibold mb-4"> Karyawan dengan Biaya Perjalanan Dinas Tertinggi</h3>
+                        <canvas id="topKaryawanBar" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
 
                 <div class="bg-white shadow-xl rounded-2xl p-6">
@@ -82,7 +110,7 @@
             <div class="mt-6">
                 <h3 class="text-lg font-semibold mb-4">Periode Anggaran Terbaru</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @forelse ($periodes as $periode)
+                    @forelse ($periodesDropdown as $periode)
                     <div class="bg-white rounded-xl shadow p-6 h-full flex flex-col justify-between">
                         <div>
                             <h4 class="text-lg font-bold mb-2">{{ $periode->nama_periode }}</h4>
@@ -114,8 +142,47 @@
 
         </div>
     </div>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+ const periodes = @json($periodes);
+    const datasets = @json($datasets);
+
+    new Chart(document.getElementById('anggaranGroupedBar'), {
+        type: 'bar',
+        data: {
+            labels: periodes,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: { stacked: false },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: val => 'Rp ' + val.toLocaleString('id-ID')
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        font: { size: 12 }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => {
+                            const val = ctx.parsed.y;
+                            return ctx.dataset.label + ': Rp ' + val.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            }
+        }
+    });
+
         var typewriter = new Typewriter('#welcomeText', {
             loop: true,
             delay: 75,
@@ -126,6 +193,155 @@
             .pauseFor(5000) // jeda 10 detik (dalam milidetik)
             .deleteAll()
             .start();
+    </script>
+
+
+    <script>
+        // 1. Line Chart: Trend Anggaran
+        const trendLabels = @json($trendAnggaran->pluck('nama_periode'));
+        const trendData = @json($trendAnggaran->pluck('total_anggaran'));
+
+        new Chart(document.getElementById('trendAnggaranChart'), {
+            type: 'line',
+            data: {
+                labels: trendLabels,
+                datasets: [{
+                    label: 'Total Anggaran',
+                    data: trendData,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: val => 'Rp ' + val.toLocaleString('id-ID')
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: true }
+                }
+            }
+        });
+
+        // 2. Pie Chart: Progress Anggaran per Departemen
+        // Buat label dan data total anggaran & realisasi masing-masing departemen
+        const depLabelsFull = @json($progressAnggaran->pluck('nama_departemen'));
+const depLabels = depLabelsFull.map(label => label.replace(/^Departemen\s+/i, ''));
+
+const anggaranTotal = @json($progressAnggaran->pluck('total_anggaran'));
+const realisasiTotal = @json($progressAnggaran->pluck('total_realisasi'));
+
+const anggaranTotalNum = anggaranTotal.map(x => Number(x));
+const realisasiTotalNum = realisasiTotal.map(x => Number(x));
+
+const progressPercent = anggaranTotalNum.map((total, idx) => {
+    const real = realisasiTotalNum[idx];
+    if (total === 0) return 0;
+    let persen = (real / total) * 100;
+    return persen < 0.1 && persen > 0 ? 0.1 : Math.round(persen * 100) / 100;
+});
+
+new Chart(document.getElementById('progressAnggaranPie'), {
+    type: 'doughnut',
+    data: {
+        labels: depLabels,
+        datasets: [{
+            label: 'Progress Penggunaan (%)',
+            data: progressPercent,
+            backgroundColor: [
+                '#2563eb','#4ade80','#fbbf24','#f87171','#a78bfa','#f472b6',
+                '#60a5fa','#fcd34d','#f97316','#c084fc'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'right',
+                    labels: {
+                    font: {
+                        size: 11  // kecilin font legend
+                    }
+                }
+
+             },
+            tooltip: {
+                callbacks: {
+                    label: ctx => {
+                        const idx = ctx.dataIndex;
+                        return `${depLabels[idx]}: ${progressPercent[idx]}% (Rp ${realisasiTotalNum[idx].toLocaleString()} / Rp ${anggaranTotalNum[idx].toLocaleString()})`;
+                    }
+                }
+            }
+        }
+    }
+});
+
+
+
+        // 3. Bar Chart: Top Departemen
+        const topDepLabels = @json($topDepartemen->pluck('nama'));
+        const topDepData = @json($topDepartemen->pluck('total_biaya'));
+
+        new Chart(document.getElementById('topDepartemenBar'), {
+            type: 'bar',
+            data: {
+                labels: topDepLabels,
+                datasets: [{
+                    label: 'Total Biaya (Rp)',
+                    data: topDepData,
+                    backgroundColor: '#2563eb'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: val => 'Rp ' + val.toLocaleString('id-ID')
+                        }
+                    }
+                }
+            }
+        });
+
+        // 4. Bar Chart: Top Karyawan
+        const topKarLabels = @json($topKaryawan->pluck('nama_pegawai'));
+        const topKarData = @json($topKaryawan->pluck('total_biaya'));
+
+        new Chart(document.getElementById('topKaryawanBar'), {
+            type: 'bar',
+            data: {
+                labels: topKarLabels,
+                datasets: [{
+                    label: 'Total Biaya (Rp)',
+                    data: topKarData,
+                    backgroundColor: '#4ade80'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: val => 'Rp ' + val.toLocaleString('id-ID')
+                        }
+                    }
+                }
+            }
+        });
     </script>
 
 </x-app-layout>

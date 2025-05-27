@@ -1,11 +1,5 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Edit Periode Anggaran
-            </h2>
-        </div>
-    </x-slot>
+
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
 
@@ -14,9 +8,9 @@
             <h3 class="font-semibold mb-2">Panduan Pengisian Periode Anggaran</h3>
             <ul class="list-disc list-inside text-sm space-y-1">
                 <li><strong>Nama Periode:</strong> Masukkan nama yang jelas, misalnya "Periode Anggaran 2025".</li>
-                <li><strong>Tanggal Mulai dan Tanggal Berakhir:</strong> Isi menggunakan format <span class="font-mono">mm/dd/yyyy</span> (bulan/hari/tahun).</li>
-                <li>Pastikan tanggal mulai lebih awal dari tanggal berakhir.</li>
-                <li>Status periode anggaran akan berubah otomatis menjadi "Ditutup" ketika tanggal berakhir sudah melewati tanggal sekarang.</li>
+                <li><strong>Tanggal Mulai Pengajuan dan Tanggal Berakhir Pengajuan:</strong> Isi menggunakan format <span class="font-mono">mm/dd/yyyy</span> (bulan/hari/tahun).</li>
+                <li>Pastikan Tanggal Mulai Pengajuan lebih awal dari Tanggal Berakhir Pengajuan.</li>
+                <li>Status periode anggaran akan berubah otomatis menjadi "Ditutup" ketika Tanggal Berakhir Pengajuan sudah melewati tanggal sekarang.</li>
             </ul>
         </div>
 
@@ -36,7 +30,7 @@
             <div class="mb-4">
                 <x-input 
                     name="mulai" 
-                    label="Tanggal Mulai" 
+                    label="Tanggal Mulai Pengajuan" 
                     type="date" 
                     value="{{ old('mulai', $periode->mulai) }}" 
                     required 
@@ -46,7 +40,7 @@
             <div class="mb-4">
                 <x-input 
                     name="berakhir" 
-                    label="Tanggal Berakhir" 
+                    label="Tanggal Berakhir Pengajuan" 
                     type="date" 
                     value="{{ old('berakhir', $periode->berakhir) }}" 
                     required 

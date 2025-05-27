@@ -38,7 +38,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('rancangan', RancanganAnggaranController::class);
+
+
     Route::get('/rancangan/editStatus/{id}', [RancanganAnggaranController::class, 'editStatus'])->name('rancangan.editStatus');
 
     // Route::get('rancangan/create', [RancanganAnggaranController::class, 'create'])->name('rancangan.create');
@@ -49,17 +50,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/spd/pengajuan', [SpdController::class, 'pengajuan'])->name('spd.pengajuan');
     Route::get('/spd/{spd}/update-status', [SpdController::class, 'editStatus'])->name('spd.editStatus');
     Route::post('/spd/{spd}/update-status', [SpdController::class, 'updateStatus'])->name('spd.updateStatus');
+    Route::resource('rancangan', RancanganAnggaranController::class);
+    Route::resource('dpd', DpdController::class);
+    Route::resource('spd', SpdController::class);
 });
 
 Route::middleware(['auth', 'role:admindept_hcm'])->group(function () {
     Route::get('/dashboard/admindept_hcm', [AdminDeptController::class, 'dashboardAdminHCM'])->name('dashboard.admindept_hcm');
 
-    Route::resource('spd', SpdController::class);
     Route::get('/spd/{spd}/edit', [SpdController::class, 'edit'])->name('spd.edit');
 
     Route::post('/spd/ajukan', [SpdController::class, 'ajukan'])->name('spd.ajukan');
 
-    Route::resource('dpd', DpdController::class);
 
     Route::get('/pegawai', [PegawaiController::class, 'index'])->name('pegawai.index');
     Route::get('/pegawai/create', [PegawaiController::class, 'create'])->name('pegawai.create');

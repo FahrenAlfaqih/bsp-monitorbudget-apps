@@ -1,13 +1,7 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Pelaporan Surat Perjalanan Dinas
-            </h2>
-        </div>
-    </x-slot>
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+        @if(auth()->user()->role === 'admindept_hcm')
         <div class="bg-gray-200 text-gray-800 p-4 mb-6 rounded-lg border border-gray-300">
             <h3 class="font-semibold mb-2">Panduan Pelaporan Surat Perjalanan Dinas</h3>
             <ul class="list-disc list-inside text-sm space-y-1">
@@ -29,10 +23,11 @@
                 </li>
             </ul>
         </div>
+        @endif
 
         <div class="bg-white p-6 shadow-md rounded-lg mb-6">
             <h3 class="font-semibold text-lg text-gray-800 mb-4">Filter Pelaporan SPD</h3>
-            <form action="{{ route('dpd.index') }}" method="GET" class="flex flex-wrap gap-3 sm:gap-4 items-end">
+            <form action="{{ route('spd.index') }}" method="GET" class="flex flex-wrap gap-3 sm:gap-4 items-end">
                 {{-- Filter Departemen --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
@@ -106,10 +101,12 @@
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-semibold text-gray-700">Daftar Rekapan Surat Perjalanan Dinas</h3>
                     <div class="flex gap-2 mb-4">
+                        @if(auth()->user()->role === 'admindept_hcm')
                         <a href="{{ route('spd.create') }}" class="inline-block px-6 py-2.5 text-white bg-blue-600 hover:bg-blue-700 font-medium text-sm rounded-lg shadow-md transition">Rekap SPD Karyawan</a>
                         <button type="submit" class="px-6 py-2.5 text-white bg-green-600 hover:bg-green-700 font-medium text-sm rounded-lg shadow-md transition">
                             Ajukan Laporan SPD ke Finance
                         </button>
+                        @endif
                     </div>
                 </div>
 
@@ -118,9 +115,11 @@
                     <table class="w-full table-auto text-left border-separate border-spacing-0">
                         <thead>
                             <tr class="bg-gray-200 text-gray-600">
+                                @if(auth()->user()->role === 'admindept_hcm')
                                 <th class="py-3 px-4 text-sm font-medium">
                                     <input type="checkbox" id="checkAll" class="form-checkbox h-4 w-4 text-blue-600">
                                 </th>
+                                @endif
                                 <th class="py-3 px-4 text-sm font-medium">Nomor SPD</th>
                                 <th class="py-3 px-4 text-sm font-medium">Nama Pegawai</th>
                                 <th class="py-3 px-4 text-sm font-medium">Asal</th>
@@ -140,12 +139,13 @@
                         <tbody>
                             @foreach ($spds as $spd)
                             <tr class="border-b hover:bg-gray-50 transition duration-300">
+                                @if(auth()->user()->role === 'admindept_hcm')
                                 <td class="py-3 px-4 text-sm">
                                     @if($spd->status === 'menunggu' || $spd->status === 'ditolak')
                                     <input type="checkbox" name="spd_ids[]" value="{{ $spd->id }}" class="form-checkbox h-4 w-4 text-blue-600">
                                     @endif
-
                                 </td>
+                                @endif
                                 <td class="py-3 px-4 text-sm">{{ $spd->nomor_spd }}</td>
                                 <td class="py-3 px-4 text-sm">{{ $spd->nama_pegawai }}</td>
                                 <td class="py-3 px-4 text-sm">{{ $spd->asal }}</td>
@@ -168,9 +168,14 @@
                                     <a href="{{ route('spd.show', $spd->id) }}" class="text-green-600 hover:text-green-800 font-medium">
                                         Detail
                                     </a>
+
+                                    @if($spd->status !== 'disetujui' || $spd->status === 'diajukan')
                                     <a href="{{ route('spd.edit', $spd->id) }}" class="text-blue-600 hover:text-blue-800 font-medium">
                                         Edit
                                     </a>
+                                    @endif
+
+
 
                                 </td>
 

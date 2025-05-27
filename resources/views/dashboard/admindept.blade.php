@@ -1,21 +1,12 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                PT. Bumi Siak Pusako
-            </h2>
-        </div>
-    </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <p id="welcomeText" class="mb-4"></p>
-            <h3 class="text-lg font-semibold mt-4">Realisasi Anggaran Perjalanan Dinas </h3>
+            <p class="mb-4">Selamat datang, Admin Departemen {{ auth()->user()->name }}!</p>
 
             <form method="GET" action="{{ route('dashboard.admindept') }}" class="mb-6 flex items-center gap-4">
-                <label for="periode_id" class="text-sm font-medium text-gray-700">Filter Periode:</label>
                 <select name="periode_id" id="periode_id"
-                    class="border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">-- Semua Periode --</option>
                     @foreach($semuaPeriode as $periode)
                     <option value="{{ $periode->id }}" {{ request('periode_id') == $periode->id ? 'selected' : '' }}>
@@ -24,27 +15,41 @@
                     @endforeach
                 </select>
                 <button type="submit"
-                    class="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow">
-                    Tampilkan
+                    class="px-4 py-2 text-sm border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <i class="fas fa-filter mr-1"></i> Tampilkan
                 </button>
             </form>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
-                    <h4 class="text-lg font-bold mb-2">Total Anggaran Perjalanan Dinas</h4>
-                    <p class="text-lg font-semibold text-green-600">Rp {{ number_format($periodeTerpilih->total_anggaran_disetujui, 0, ',', '.') }}</p>
-                </div>
-                <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
-                    <h4 class="text-lg font-bold mb-2">Total Pengeluaran</h4>
-                    <p class="text-lg font-semibold text-red-600">Rp {{ number_format($periodeTerpilih->total_pengeluaran, 0, ',', '.') }}</p>
-                </div>
-                <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
-                    <h4 class="text-lg font-bold mb-2">Sisa Anggaran</h4>
-                    <p class="text-lg font-semibold text-yellow-600">Rp {{ number_format($periodeTerpilih->sisa_anggaran, 0, ',', '.') }}</p>
-                </div>
-            </div>
+<div class="max-w-7xl mx-auto">
+    {{-- LINE CHART: TREND DINAS & BIAYA --}}
+    <div class="bg-white shadow-lg rounded-xl mb-8 p-6">
+        <h4 class="font-semibold mb-4">Trend Perjalanan Dinas & Biaya Bulanan</h4>
+        <canvas id="trendDinasChart" height="80"></canvas>
+    </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+    {{-- GRID 2 KOLM: BAR CHART dan PIE CHART --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {{-- BAR CHART --}}
+        <div class="bg-white rounded-xl shadow p-6 flex flex-col">
+            <h4 class="font-semibold mb-4">Jumlah Dinas per Karyawan</h4>
+            <canvas id="barDinasKaryawan" height="300"></canvas>
+        </div>
+
+<div class="bg-white rounded-xl shadow p-6 flex flex-col items-center justify-center">
+    <h4 class="font-semibold mb-4">Progress Penggunaan Anggaran</h4>
+    <canvas id="pieAnggaran" width="300" height="300" style="max-width: 300px;"></canvas>
+    <div class="mt-2 text-gray-600 text-sm text-center">
+        Terpakai: <b>Rp {{ number_format($usedBudget,0,',','.') }}</b> <br>
+        Sisa: <b>Rp {{ number_format($remainingBudget,0,',','.') }}</b>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 mb-6">
                 {{-- Top Karyawan --}}
                 <div class="bg-white rounded-2xl shadow-lg p-6">
                     <h4 class="text-lg font-semibold text-black-700 mb-4">Top Karyawan dengan Biaya Dinas Tertinggi</h4>
@@ -171,5 +176,103 @@
         const data = @json($data);
         console.log(data);
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // --- Data Line Chart ---
+    const trendLabels = @json($trendDinas->pluck('tanggal'));
+    const jumlahDinas = @json($trendDinas->pluck('jumlah_dinas'));
+    const totalBiaya = @json($trendDinas->pluck('total_biaya'));
+
+    new Chart(document.getElementById('trendDinasChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: trendLabels,
+            datasets: [
+                {
+                    label: 'Jumlah Dinas',
+                    data: jumlahDinas,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37,99,235,0.08)',
+                    fill: true,
+                    tension: 0.3
+                },
+                {
+                    label: 'Biaya Perjalanan Dinas',
+                    data: totalBiaya,
+                    borderColor: '#f59e42',
+                    backgroundColor: 'rgba(245,158,66,0.08)',
+                    fill: true,
+                    tension: 0.3,
+                    yAxisID: 'y2'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            stacked: false,
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: { display: true, text: 'Jumlah Dinas' }
+                },
+                y2: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: { display: true, text: 'Total Biaya (Rp)' },
+                    grid: { drawOnChartArea: false }
+                }
+            }
+        }
+    });
+
+    // --- Data Bar Chart ---
+    const karyawanLabels = @json($barDinasKaryawan->pluck('nama_pegawai'));
+    const dinasData = @json($barDinasKaryawan->pluck('total_dinas'));
+    new Chart(document.getElementById('barDinasKaryawan').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: karyawanLabels,
+            datasets: [{
+                label: 'Jumlah Dinas',
+                data: dinasData,
+                backgroundColor: '#2563eb'
+            }]
+        }
+    });
+
+    // --- Data Pie Chart ---
+new Chart(document.getElementById('pieAnggaran').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Terpakai', 'Sisa'],
+        datasets: [{
+            data: [{{ $usedBudget }}, {{ $remainingBudget }}],
+            backgroundColor: ['#22c55e', '#eab308'],
+        }]
+    },
+    options: {
+        maintainAspectRatio: true, 
+        aspectRatio: 1,             
+        layout: {
+            padding: 10
+        },
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+</script>
+
 
 </x-app-layout>

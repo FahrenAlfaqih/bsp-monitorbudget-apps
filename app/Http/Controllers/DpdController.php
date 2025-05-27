@@ -49,6 +49,10 @@ class DpdController extends Controller
 
     public function index(Request $request)
     {
+        $user = auth()->user();
+
+        $departemen = DB::table('departemen')->where('user_id', $user->id)->first();
+
         $query = DB::table('deklarasi_perjalanan_dinas')
             ->join('surat_perjalanan_dinas as spd', 'deklarasi_perjalanan_dinas.spd_id', '=', 'spd.id')
             ->join('departemen', 'spd.departemen_id', '=', 'departemen.id')
@@ -61,7 +65,16 @@ class DpdController extends Controller
                 'spd.id as spd_id'
             );
 
-        // Filter sesuai request...
+        
+        if ($user->role === 'admindept') {
+            if ($departemen) {
+                $query->where('departemen.id', $departemen->id);
+            } else {
+                $query->whereRaw('0=1');
+            }
+        }
+
+        // Filter berdasarkan input user
         if ($request->filled('nama_pegawai')) {
             $query->where('spd.nama_pegawai', 'like', '%' . $request->nama_pegawai . '%');
         }
@@ -90,6 +103,8 @@ class DpdController extends Controller
 
         return view('dpd.index', compact('deklarasi', 'departemenList', 'details'));
     }
+
+
 
     public function show($id)
     {

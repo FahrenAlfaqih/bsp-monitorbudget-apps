@@ -1,15 +1,9 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Update Status Rancangan Anggaran
-            </h2>
-        </div>
-    </x-slot>
+
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-700 mb-4">Form Update Status</h3>
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">Form Persetujuan Rancangan Anggaran</h3>
 
             <form action="{{ route('rancangan.updateStatus', $rancangan->id) }}" method="POST">
                 @csrf
@@ -18,7 +12,7 @@
                 <div class="grid grid-cols-1 gap-6 mb-6">
                     <!-- Status -->
                     <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                        <label for="status" class="block text-sm font-medium text-gray-700">Status Persetujuan</label>
                         <select name="status" id="status"
                             class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                             <option value="menunggu" {{ old('status', $rancangan->status) == 'menunggu' ? 'selected' : '' }}>Menunggu</option>

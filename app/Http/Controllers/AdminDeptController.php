@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
+use Carbon\Carbon;
 
 
 /**
@@ -121,6 +122,44 @@ class AdminDeptController extends Controller
             ->where('departemen_id', $departemen_id)
             ->get();
 
+        $jumlahDitolak = DB::table('rancangan_anggaran')
+            ->where('status', 'ditolak')
+            ->where('departemen_id', $user->departemen->id)
+            ->count();
+
+        if ($jumlahDitolak > 0) {
+            Alert::warning('Perhatian', 'Pengajuan rancangan anggaran anda ditolak. Silakan periksa kembali.');
+        }
+
+        //Line chart
+        // Tentukan bulan aktif (bisa dari request atau periode)
+        $startOfMonth = Carbon::parse($periodeTerpilih->mulai)->startOfMonth();
+        $endOfMonth   = Carbon::parse($periodeTerpilih->mulai)->endOfMonth();
+
+        $trendDinas = DB::table('deklarasi_perjalanan_dinas as d')
+            ->join('surat_perjalanan_dinas as s', 'd.spd_id', '=', 's.id')
+            ->where('s.departemen_id', $user->departemen->id)
+            ->whereBetween('d.tanggal_deklarasi', [$startOfMonth, $endOfMonth])
+            ->selectRaw('DATE(d.tanggal_deklarasi) as tanggal, COUNT(d.id) as jumlah_dinas, SUM(d.total_biaya) as total_biaya')
+            ->groupBy('tanggal')
+            ->orderBy('tanggal')
+            ->get();
+
+        //pie chart progress anggaran
+        $usedBudget = $totalPengeluaran;
+        $remainingBudget = max($totalAnggaran - $totalPengeluaran, 0);
+
+
+        $barDinasKaryawan = DB::table('deklarasi_perjalanan_dinas as d')
+            ->join('surat_perjalanan_dinas as s', 'd.spd_id', '=', 's.id')
+            ->where('s.departemen_id', $user->departemen->id)
+            ->whereBetween('d.tanggal_deklarasi', [$startOfMonth, $endOfMonth])
+            ->select('s.nama_pegawai', DB::raw('COUNT(d.id) as total_dinas'))
+            ->groupBy('s.nama_pegawai')
+            ->orderByDesc('total_dinas')
+            ->get();
+
+
         return view('dashboard.admindept', [
             'rancangan' => $rancangan,
             'periodeTerpilih' => $periodeTerpilih,
@@ -128,7 +167,11 @@ class AdminDeptController extends Controller
             'topKaryawan' => $topKaryawan,
             'topBudget' => $topBudget,
             'topTujuanDinas' => $topTujuanDinas,
-            'data' => $data
+            'data' => $data,
+            'trendDinas' => $trendDinas,
+            'usedBudget' => $usedBudget,
+            'remainingBudget' => $remainingBudget,
+            'barDinasKaryawan' => $barDinasKaryawan,
         ]);
     }
 
