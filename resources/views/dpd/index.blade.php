@@ -32,7 +32,7 @@
                         placeholder="Cari nama pegawai...">
                 </div>
 
-                @if(auth()->user()->role === 'admindept_hcm')
+                @if(auth()->user()->role === 'admindept_hcm' || auth()->user()->role === 'tmhcm')
                 {{-- Filter Departemen --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>

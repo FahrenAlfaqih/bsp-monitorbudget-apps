@@ -21,6 +21,18 @@
             </ul>
         </div>
 
+        <div class="bg-yellow-50 border border-yellow-300 rounded p-4 mb-6 text-sm text-yellow-800">
+            <h4 class="font-semibold mb-2">Aturan Reimburse untuk Level Pegawai: {{ $spd->pegawai->pegawai_level->nama_level }}</h4>
+            <ul class="list-disc list-inside">
+                @foreach($reimburseRules as $rule)
+                <li>
+                    <strong>{{ ucfirst($rule->jenis_biaya) }}:</strong> Maksimal Rp {{ number_format($rule->maksimal_biaya, 0, ',', '.') }} - {{ $rule->keterangan }}
+                </li>
+                @endforeach
+            </ul>
+        </div>
+
+
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
             <h3 class="text-lg font-semibold text-gray-700 mb-4">Form Persetujuan SPD</h3>
 

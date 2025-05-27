@@ -19,4 +19,8 @@ class Pegawai extends Model
     {
         return $this->hasMany(Spd::class);
     }
+    public function pegawai_level()
+    {
+        return $this->belongsTo(PegawaiLevel::class, 'pegawai_level_id');
+    }
 }

@@ -1,6 +1,5 @@
 <x-app-layout>
 
-
     <div class="py-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-gray-200 text-gray-800 p-4 mb-6 rounded-lg border border-gray-300">
@@ -52,9 +51,17 @@
                                 <input type="text" name="details[0][jenis_biaya]" id="jenis_biaya_0" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Contoh: Transportasi" />
                             </div>
                             <div>
-                                <label for="nominal_0" class="block text-sm font-medium text-gray-700">Nominal</label>
-                                <input type="number" name="details[0][nominal]" id="nominal_0" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" min="0" step="1000" />
+                                <label for="nominal_0_display" class="block text-sm font-medium text-gray-700">Nominal</label>
+                                <input
+                                    type="text"
+                                    name="dummy_nominal_0"
+                                    id="nominal_0_display"
+                                    class="rupiah-input mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                    placeholder="Rp. 0" />
+                                <!-- Hidden input untuk simpan nilai numeric tanpa format -->
+                                <input type="hidden" name="details[0][nominal]" id="nominal_0" />
                             </div>
+
                             <div>
                                 <label for="keterangan_0" class="block text-sm font-medium text-gray-700">Keterangan</label>
                                 <input type="text" name="details[0][keterangan]" id="keterangan_0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Opsional" />
@@ -63,7 +70,7 @@
 
                     </div>
 
-                    <button type="button" id="addDetailBtn" class="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                    <button type="button" id="addDetailBtn" class="inline-block px-6 py-2.5 text-white bg-blue-600 hover:bg-blue-700 font-medium text-sm rounded-lg shadow-md transition">
                         + Tambah Rincian Biaya
                     </button>
 
@@ -79,8 +86,6 @@
                         </button>
                     </div>
 
-
-
                 </form>
             </div>
         </div>
@@ -92,6 +97,7 @@
 
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script>
         $(document).ready(function() {
             $('.select2').select2({
@@ -105,24 +111,69 @@
 
             $('#addDetailBtn').click(function() {
                 let html = `
-            <div class="grid grid-cols-3 gap-4 items-end biaya-item mt-3">
-                <div>
-                    <label for="jenis_biaya_${index}" class="block text-sm font-medium text-gray-700">Jenis Biaya</label>
-                    <input type="text" name="details[${index}][jenis_biaya]" id="jenis_biaya_${index}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Contoh: Konsumsi" />
-                </div>
-                <div>
-                    <label for="nominal_${index}" class="block text-sm font-medium text-gray-700">Nominal</label>
-                    <input type="number" name="details[${index}][nominal]" id="nominal_${index}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" min="0" step="1000" />
-                </div>
-                <div>
-                    <label for="keterangan_${index}" class="block text-sm font-medium text-gray-700">Keterangan</label>
-                    <input type="text" name="details[${index}][keterangan]" id="keterangan_${index}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Opsional" />
-                </div>
-            </div>
-            `;
+                    <div class="grid grid-cols-3 gap-4 items-end biaya-item mt-3">
+                        <div>
+                            <label for="jenis_biaya_${index}" class="block text-sm font-medium text-gray-700">Jenis Biaya</label>
+                            <input type="text" name="details[${index}][jenis_biaya]" id="jenis_biaya_${index}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Contoh: Konsumsi" />
+                        </div>
+                        <div>
+                            <label for="nominal_${index}_display" class="block text-sm font-medium text-gray-700">Nominal</label>
+                            <input type="text" 
+                                   name="dummy_nominal_${index}" 
+                                   id="nominal_${index}_display" 
+                                   required 
+                                   class="rupiah-input mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                                   placeholder="Rp. 0" />
+                            <!-- Hidden input untuk menyimpan nilai numeric yang sebenarnya -->
+                            <input type="hidden" name="details[${index}][nominal]" id="nominal_${index}" />
+                        </div>
+                        <div>
+                            <label for="keterangan_${index}" class="block text-sm font-medium text-gray-700">Keterangan</label>
+                            <input type="text" name="details[${index}][keterangan]" id="keterangan_${index}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Opsional" />
+                        </div>
+                    </div>
+                `;
                 $('#biayaContainer').append(html);
+                attachRupiahListeners();
                 index++;
             });
+        });
+
+        function formatRupiah(value) {
+            value = value.replace(/[^,\d]/g, '').toString();
+            let split = value.split(',');
+            let sisa = split[0].length % 3;
+            let rupiah = split[0].substr(0, sisa);
+            let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            if (ribuan) {
+                let separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+
+            rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+            return rupiah;
+        }
+
+        function onInputNominal(e) {
+            let input = e.target;
+            let cleanVal = input.value;
+            let numericVal = cleanVal.replace(/[^,\d]/g, '');
+            let formatted = formatRupiah(numericVal);
+            input.value = 'Rp. ' + formatted;
+
+            // Ambil angka index dari id input (misal nominal_0_display => 0)
+            let idx = input.id.match(/\d+/)[0];
+            // Set nilai numeric ke input hidden tanpa titik dan koma diganti titik desimal
+            $('#nominal_' + idx).val(formatted.replace(/\./g, '').replace(',', '.'));
+        }
+
+        function attachRupiahListeners() {
+            $('.rupiah-input').off('input').on('input', onInputNominal);
+        }
+
+        $(document).ready(function() {
+            attachRupiahListeners();
         });
     </script>
     @endpush

@@ -4,7 +4,50 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <p class="mb-4">Selamat datang, Admin Departemen {{ auth()->user()->name }}!</p>
 
-            <form method="GET" action="{{ route('dashboard.admindept') }}" class="mb-6 flex items-center gap-4">
+
+
+<div class="max-w-7xl mx-auto">
+    {{-- LINE CHART: TREND DINAS & BIAYA --}}
+    <div class="bg-white shadow-lg rounded-xl mb-8 p-6">
+        <h4 class="font-semibold mb-4">Trend Perjalanan Dinas & Biaya Bulanan</h4>
+        <canvas id="trendDinasChart" height="80"></canvas>
+    </div>
+
+                {{-- Row 1: Bar Chart Total Biaya Per Bulan | Pie Chart SPD Per Status --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h4 class="text-md font-semibold mb-4">Total Biaya Perjalanan Dinas {{ auth()->user()->name }} Per Bulan</h4>
+                    <canvas id="biayaPerBulanChart" height="250"></canvas>
+                </div>
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h4 class="text-md font-semibold mb-4">Rata-rata Biaya Perjalanan Dinas {{ auth()->user()->name }} Per Pegawai</h4>
+                    <canvas id="rataRataBiayaChart" height="250"></canvas>
+                </div>
+            </div>
+
+            {{-- Row 2: Horizontal Bar Chart Jumlah SPD Per Pegawai | Bar Chart Rata-rata Biaya Per Pegawai --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h4 class="text-md font-semibold mb-4">Jumlah SPD {{ auth()->user()->name }} Per Pegawai</h4>
+                    <canvas id="jumlahSpdPerPegawaiChart" height="250"></canvas>
+                </div>
+<div class="bg-white rounded-xl shadow p-6">
+    <h4 class="text-md font-semibold mb-4 text-left">Progress Penggunaan Anggaran Dinas {{ auth()->user()->name }}</h4>
+    <div style="width: 350px; height: 350px; margin: 0 auto;">
+        <canvas id="pieAnggaran"></canvas>
+        <div class="mt-2 text-gray-600 text-sm text-center">
+            Terpakai: <b>Rp {{ number_format($usedBudget,0,',','.') }}</b> <br>
+            Sisa: <b>Rp {{ number_format($remainingBudget,0,',','.') }}</b>
+        </div>
+    </div>
+</div>
+
+            </div>
+
+</div>
+            <h3 class="text-lg font-semibold mt-4">Top List Anggaran Departemen </h3>
+            <form method="GET" action="{{ route('dashboard.admindept') }}" 
+            class="flex flex-wrap gap-3 sm:gap-4 items-end mb-4 mt-3">
                 <select name="periode_id" id="periode_id"
                     class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">-- Semua Periode --</option>
@@ -19,35 +62,6 @@
                     <i class="fas fa-filter mr-1"></i> Tampilkan
                 </button>
             </form>
-
-<div class="max-w-7xl mx-auto">
-    {{-- LINE CHART: TREND DINAS & BIAYA --}}
-    <div class="bg-white shadow-lg rounded-xl mb-8 p-6">
-        <h4 class="font-semibold mb-4">Trend Perjalanan Dinas & Biaya Bulanan</h4>
-        <canvas id="trendDinasChart" height="80"></canvas>
-    </div>
-
-    {{-- GRID 2 KOLM: BAR CHART dan PIE CHART --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {{-- BAR CHART --}}
-        <div class="bg-white rounded-xl shadow p-6 flex flex-col">
-            <h4 class="font-semibold mb-4">Jumlah Dinas per Karyawan</h4>
-            <canvas id="barDinasKaryawan" height="300"></canvas>
-        </div>
-
-<div class="bg-white rounded-xl shadow p-6 flex flex-col items-center justify-center">
-    <h4 class="font-semibold mb-4">Progress Penggunaan Anggaran</h4>
-    <canvas id="pieAnggaran" width="300" height="300" style="max-width: 300px;"></canvas>
-    <div class="mt-2 text-gray-600 text-sm text-center">
-        Terpakai: <b>Rp {{ number_format($usedBudget,0,',','.') }}</b> <br>
-        Sisa: <b>Rp {{ number_format($remainingBudget,0,',','.') }}</b>
-    </div>
-</div>
-
-    </div>
-</div>
-
-
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 mb-6">
                 {{-- Top Karyawan --}}
@@ -100,27 +114,28 @@
                         <p class="text-sm text-gray-600">Mulai: {{ \Carbon\Carbon::parse($periodeTerpilih->mulai)->format('d M Y') }}</p>
                         <p class="text-sm text-gray-600">Berakhir: {{ \Carbon\Carbon::parse($periodeTerpilih->berakhir)->format('d M Y') }}</p>
                         @if ($periodeTerpilih->sudahMengajukan)
-                        <div class="mt-2 text-sm">
-                            @if ($periodeTerpilih->statusPengajuan === 'menunggu')
-                            <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
-                                <span>
-                                    Menunggu Persetujuan
-                                </span>
-                            </p>
-                            @elseif ($periodeTerpilih->statusPengajuan === 'disetujui')
-                            <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
-                                <span>
-                                    Disetujui
-                                </span>
-                            </p>
-                            @elseif ($periodeTerpilih->statusPengajuan === 'ditolak')
-                            <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
-                                <span>
-                                    Ditolak
-                                </span>
-                            </p>
-                            @endif
-                        </div>
+<div class="mt-2 text-sm">
+    @if ($periodeTerpilih->statusPengajuan === 'menunggu')
+        <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
+            <span class="inline-block px-2 py-1 rounded-full text-white bg-yellow-500">
+                Menunggu Persetujuan
+            </span>
+        </p>
+    @elseif ($periodeTerpilih->statusPengajuan === 'disetujui')
+        <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
+            <span class="inline-block px-2 py-1 rounded-full text-white bg-green-500">
+                Disetujui
+            </span>
+        </p>
+    @elseif ($periodeTerpilih->statusPengajuan === 'ditolak')
+        <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
+            <span class="inline-block px-2 py-1 rounded-full text-white bg-red-500">
+                Ditolak
+            </span>
+        </p>
+    @endif
+</div>
+
                         @endif
                         <p class="mt-2 text-sm">
                             Status:
@@ -233,20 +248,7 @@
         }
     });
 
-    // --- Data Bar Chart ---
-    const karyawanLabels = @json($barDinasKaryawan->pluck('nama_pegawai'));
-    const dinasData = @json($barDinasKaryawan->pluck('total_dinas'));
-    new Chart(document.getElementById('barDinasKaryawan').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: karyawanLabels,
-            datasets: [{
-                label: 'Jumlah Dinas',
-                data: dinasData,
-                backgroundColor: '#2563eb'
-            }]
-        }
-    });
+    
 
     // --- Data Pie Chart ---
 new Chart(document.getElementById('pieAnggaran').getContext('2d'), {
@@ -271,6 +273,83 @@ new Chart(document.getElementById('pieAnggaran').getContext('2d'), {
         }
     }
 });
+
+ // Data 1: Bar Chart Total Biaya Per Bulan
+        const biayaPerBulanLabels = @json($biayaPerBulan -> pluck('bulan'));
+        const biayaPerBulanData = @json($biayaPerBulan -> pluck('total_biaya'));
+
+        new Chart(document.getElementById('biayaPerBulanChart'), {
+            type: 'bar',
+            data: {
+                labels: biayaPerBulanLabels,
+                datasets: [{
+                    label: 'Total Biaya Perjalanan (Rp)',
+                    data: biayaPerBulanData,
+                    backgroundColor: '#2563eb',
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: val => 'Rp ' + val.toLocaleString('id-ID')
+                        }
+                    }
+                }
+            }
+        });
+
+
+        // Data 3: Horizontal Bar Chart Jumlah SPD Per Pegawai
+        const spdPegawaiLabels = @json($jumlahSpdPerPegawai -> pluck('nama_pegawai'));
+        const spdPegawaiData = @json($jumlahSpdPerPegawai -> pluck('jumlah_spd'));
+
+        new Chart(document.getElementById('jumlahSpdPerPegawaiChart'), {
+            type: 'bar',
+            data: {
+                labels: spdPegawaiLabels,
+                datasets: [{
+                    label: 'Jumlah SPD',
+                    data: spdPegawaiData,
+                    backgroundColor: '#2563eb',
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Data 4: Bar Chart Rata-rata Biaya Per Pegawai
+        const rataRataBiayaLabels = @json($rataRataBiayaPerPegawai -> pluck('nama_pegawai'));
+        const rataRataBiayaData = @json($rataRataBiayaPerPegawai -> pluck('rata_rata_biaya'));
+
+        new Chart(document.getElementById('rataRataBiayaChart'), {
+            type: 'bar',
+            data: {
+                labels: rataRataBiayaLabels,
+                datasets: [{
+                    label: 'Rata-rata Biaya (Rp)',
+                    data: rataRataBiayaData,
+                    backgroundColor: '#f59e0b',
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: val => 'Rp ' + val.toLocaleString('id-ID')
+                        }
+                    }
+                }
+            }
+        });
 
 </script>
 

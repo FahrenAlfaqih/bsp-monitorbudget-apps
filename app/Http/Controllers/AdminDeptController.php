@@ -80,7 +80,8 @@ class AdminDeptController extends Controller
         $periodeTerpilih->sudahMengajukan = $pengajuan ? true : false;
         $periodeTerpilih->statusPengajuan = $pengajuan->status ?? null;
 
-
+        $mulaiPeriode = $periodeTerpilih->mulai ?? now()->startOfYear();
+        $berakhirPeriode = $periodeTerpilih->berakhir ?? now()->endOfYear();
         // Data lainnya
         $topKaryawan = DB::table('deklarasi_perjalanan_dinas as d')
             ->join('surat_perjalanan_dinas as s', 'd.spd_id', '=', 's.id')
@@ -159,6 +160,48 @@ class AdminDeptController extends Controller
             ->orderByDesc('total_dinas')
             ->get();
 
+        if ($user->email == 'finec@admindept.com') {
+            $spdMenunggu = Spd::where('status', 'diajukan')->count();
+            if ($spdMenunggu > 0) {
+                Alert::warning('Perhatian', 'Ada ' . $spdMenunggu . ' Pelaporan SPD yang belum diproses. Silakan periksa kembali.');
+            }
+        }
+
+        $biayaPerBulan = DB::table('deklarasi_perjalanan_dinas as d')
+            ->join('surat_perjalanan_dinas as s', 'd.spd_id', '=', 's.id')
+            ->where('s.departemen_id', $user->departemen->id)
+            ->whereBetween('d.tanggal_deklarasi', [$mulaiPeriode, $berakhirPeriode])
+            ->select(
+                DB::raw("DATE_FORMAT(d.tanggal_deklarasi, '%Y-%m') as bulan"),
+                DB::raw('SUM(d.total_biaya) as total_biaya')
+            )
+            ->groupBy('bulan')
+            ->orderBy('bulan')
+            ->get();
+
+        $spdStatusCount = DB::table('surat_perjalanan_dinas')
+            ->where('departemen_id', $user->departemen->id)
+            ->select('status', DB::raw('COUNT(*) as total'))
+            ->groupBy('status')
+            ->get()
+            ->keyBy('status');
+
+        $jumlahSpdPerPegawai = DB::table('surat_perjalanan_dinas')
+            ->where('departemen_id', $user->departemen->id)
+            ->select('nama_pegawai', DB::raw('COUNT(*) as jumlah_spd'))
+            ->groupBy('nama_pegawai')
+            ->orderByDesc('jumlah_spd')
+            ->limit(10)
+            ->get();
+
+        $rataRataBiayaPerPegawai = DB::table('deklarasi_perjalanan_dinas as d')
+            ->join('surat_perjalanan_dinas as s', 'd.spd_id', '=', 's.id')
+            ->where('s.departemen_id', $user->departemen->id)
+            ->select('s.nama_pegawai', DB::raw('AVG(d.total_biaya) as rata_rata_biaya'))
+            ->groupBy('s.nama_pegawai')
+            ->orderByDesc('rata_rata_biaya')
+            ->limit(10)
+            ->get();
 
         return view('dashboard.admindept', [
             'rancangan' => $rancangan,
@@ -172,6 +215,11 @@ class AdminDeptController extends Controller
             'usedBudget' => $usedBudget,
             'remainingBudget' => $remainingBudget,
             'barDinasKaryawan' => $barDinasKaryawan,
+            'biayaPerBulan' => $biayaPerBulan,
+            'spdStatusCount' => $spdStatusCount,
+            'jumlahSpdPerPegawai' => $jumlahSpdPerPegawai,
+            'rataRataBiayaPerPegawai' => $rataRataBiayaPerPegawai
+
         ]);
     }
 
@@ -183,13 +231,8 @@ class AdminDeptController extends Controller
     public function dashboardAdminHCM(Request $request)
     {
         $user = Auth::user();
-
-        // Pastikan user punya departemen terkait
         if (!$user->departemen) {
-            // Bisa redirect dengan pesan, atau set default kosong
-            // Misal:
             Alert::warning('Perhatian', 'User belum memiliki departemen terkait.');
-            // Atau langsung return view dengan data minimal:
             return view('dashboard.admindept_hcm', [
                 'rancangan' => collect(),
                 'semuaPeriode' => collect(),
@@ -206,7 +249,6 @@ class AdminDeptController extends Controller
             ]);
         }
 
-        // Ambil rancangan berdasarkan role
         if ($user->role === 'tmhcm') {
             $rancangan = RancanganAnggaran::with(['departemen', 'periode'])->get();
         } else {
@@ -215,10 +257,7 @@ class AdminDeptController extends Controller
                 ->get();
         }
 
-        // Ambil periode aktif
         $periodeAktif = PeriodeAnggaran::where('status', 'dibuka')->get();
-
-        // Tandai sudah mengajukan di periode aktif
         $periodeAktif = $periodeAktif->map(function ($item) use ($user) {
             $item->sudahMengajukan = RancanganAnggaran::where('departemen_id', $user->departemen->id)
                 ->where('periode_id', $item->id)
@@ -227,8 +266,6 @@ class AdminDeptController extends Controller
         });
 
         PeriodeAnggaran::autoUpdateStatus();
-
-        // Ambil semua periode
         $semuaPeriode = PeriodeAnggaran::orderBy('mulai', 'desc')->get();
         $semuaPeriode = $semuaPeriode->map(function ($item) use ($user) {
             $item->sudahMengajukan = RancanganAnggaran::where('departemen_id', $user->departemen->id)
@@ -236,34 +273,46 @@ class AdminDeptController extends Controller
                 ->exists();
             return $item;
         });
-
-        // Pilih periode yang dipilih dari request, atau default periode pertama
         $periodeIdDipilih = $request->get('periode_id') ?? $semuaPeriode->first()?->id;
         $periodeTerpilih = $periodeIdDipilih ? PeriodeAnggaran::find($periodeIdDipilih) : null;
 
-        // Jika periodeTerpilih tidak ditemukan, set null agar aman di view
         if (!$periodeTerpilih) {
             $periodeTerpilih = null;
             $pengajuan = null;
         } else {
-            // Cari pengajuan sesuai periode dan departemen
             $pengajuan = RancanganAnggaran::where('departemen_id', $user->departemen->id)
                 ->where('periode_id', $periodeTerpilih->id)
                 ->latest()
                 ->first();
         }
 
-        // Set flag pengajuan untuk periode terpilih, jika ada
         if ($periodeTerpilih) {
             $periodeTerpilih->sudahMengajukan = $pengajuan ? true : false;
             $periodeTerpilih->statusPengajuan = $pengajuan->status ?? null;
         }
 
-        // Jika periodeTerpilih kosong, buat nilai default tanggal supaya query tidak error
         $mulaiPeriode = $periodeTerpilih->mulai ?? now()->startOfYear();
         $berakhirPeriode = $periodeTerpilih->berakhir ?? now()->endOfYear();
 
-        // Query top karyawan, budget, dan tujuan dinas dengan pengecekan tanggal
+        $totalAnggaran = AnggaranFix::where('departemen_id', $user->departemen->id)
+            ->where('periode_id', $periodeTerpilih->id)
+            ->sum('jumlah_anggaran');
+
+        $totalPengeluaran = DB::table('deklarasi_perjalanan_dinas')
+            ->join('surat_perjalanan_dinas', 'deklarasi_perjalanan_dinas.spd_id', '=', 'surat_perjalanan_dinas.id')
+            ->where('surat_perjalanan_dinas.departemen_id', $user->departemen->id)
+            ->whereBetween('deklarasi_perjalanan_dinas.tanggal_deklarasi', [$periodeTerpilih->mulai, $periodeTerpilih->berakhir])
+            ->sum('deklarasi_perjalanan_dinas.total_biaya');
+
+        $periodeTerpilih->total_anggaran_disetujui = $totalAnggaran;
+        $periodeTerpilih->total_pengeluaran = $totalPengeluaran;
+        $periodeTerpilih->sisa_anggaran = $totalAnggaran - $totalPengeluaran;
+
+        //pie chart progress anggaran
+        $usedBudget = $totalPengeluaran;
+        $remainingBudget = max($totalAnggaran - $totalPengeluaran, 0);
+
+
         $topKaryawan = DB::table('deklarasi_perjalanan_dinas as d')
             ->join('surat_perjalanan_dinas as s', 'd.spd_id', '=', 's.id')
             ->join('departemen', 's.departemen_id', '=', 'departemen.id')
@@ -318,7 +367,83 @@ class AdminDeptController extends Controller
         }
 
 
+        $AnggaranTolak = DB::table('rancangan_anggaran')
+            ->where('status', 'ditolak')
+            ->where('departemen_id', $user->departemen->id)
+            ->count();
 
+        if ($AnggaranTolak > 0) {
+            Alert::warning('Perhatian', 'Pengajuan rancangan anggaran anda ditolak. Silakan periksa kembali.');
+        }
+
+        $periodeIdFilter = $request->get('periode_id');
+        $filterByMonth = $request->get('filter_by_month'); // true/false untuk filter bulan
+        $monthStart = $request->get('month_start'); // yyyy-mm
+        $monthEnd = $request->get('month_end');     // yyyy-mm
+
+        // Ambil semua periode (dipakai di view dropdown filter)
+        $semuaPeriode = PeriodeAnggaran::orderBy('mulai', 'desc')->get();
+
+        // 1. Jumlah SPD per periode (line chart)
+        $queryPeriode = DB::table('surat_perjalanan_dinas as spd')
+            ->join('periode_anggaran as p', 'spd.periode_id', '=', 'p.id')
+            ->select('p.nama_periode', 'p.mulai', DB::raw('COUNT(spd.id) as jumlah_spd'))
+            ->groupBy('p.nama_periode', 'p.mulai') // tambahkan p.mulai
+            ->orderBy('p.mulai');
+
+
+        if ($periodeIdFilter) {
+            $queryPeriode->where('spd.periode_id', $periodeIdFilter);
+        }
+
+        $jumlahSpdPerPeriode = $queryPeriode->get();
+
+        // 2. Jika filter bulan diaktifkan, jumlah SPD per bulan (yyyy-mm)
+        $jumlahSpdPerBulan = collect();
+        if ($filterByMonth && $monthStart && $monthEnd) {
+            $jumlahSpdPerBulan = DB::table('surat_perjalanan_dinas')
+                ->select(DB::raw("DATE_FORMAT(tanggal_berangkat, '%Y-%m') as bulan"), DB::raw('COUNT(id) as jumlah_spd'))
+                ->whereBetween(DB::raw("DATE_FORMAT(tanggal_berangkat, '%Y-%m')"), [$monthStart, $monthEnd])
+                ->groupBy('bulan')
+                ->orderBy('bulan')
+                ->get();
+        }
+
+        $biayaPerBulan = DB::table('deklarasi_perjalanan_dinas as d')
+            ->join('surat_perjalanan_dinas as s', 'd.spd_id', '=', 's.id')
+            ->where('s.departemen_id', $user->departemen->id)
+            ->whereBetween('d.tanggal_deklarasi', [$mulaiPeriode, $berakhirPeriode])
+            ->select(
+                DB::raw("DATE_FORMAT(d.tanggal_deklarasi, '%Y-%m') as bulan"),
+                DB::raw('SUM(d.total_biaya) as total_biaya')
+            )
+            ->groupBy('bulan')
+            ->orderBy('bulan')
+            ->get();
+
+        $spdStatusCount = DB::table('surat_perjalanan_dinas')
+            ->where('departemen_id', $user->departemen->id)
+            ->select('status', DB::raw('COUNT(*) as total'))
+            ->groupBy('status')
+            ->get()
+            ->keyBy('status');
+
+        $jumlahSpdPerPegawai = DB::table('surat_perjalanan_dinas')
+            ->where('departemen_id', $user->departemen->id)
+            ->select('nama_pegawai', DB::raw('COUNT(*) as jumlah_spd'))
+            ->groupBy('nama_pegawai')
+            ->orderByDesc('jumlah_spd')
+            ->limit(10)
+            ->get();
+
+        $rataRataBiayaPerPegawai = DB::table('deklarasi_perjalanan_dinas as d')
+            ->join('surat_perjalanan_dinas as s', 'd.spd_id', '=', 's.id')
+            ->where('s.departemen_id', $user->departemen->id)
+            ->select('s.nama_pegawai', DB::raw('AVG(d.total_biaya) as rata_rata_biaya'))
+            ->groupBy('s.nama_pegawai')
+            ->orderByDesc('rata_rata_biaya')
+            ->limit(10)
+            ->get();
         return view(
             'dashboard.admindept_hcm',
             compact(
@@ -334,7 +459,19 @@ class AdminDeptController extends Controller
                 'topKaryawan',
                 'topBudget',
                 'topTujuanDinas',
-                'totalAnggaranDisetujui'
+                'totalAnggaranDisetujui',
+                'jumlahSpdPerPeriode',
+                'jumlahSpdPerBulan',
+                'filterByMonth',
+                'monthStart',
+                'monthEnd',
+                'biayaPerBulan',
+                'spdStatusCount',
+                'jumlahSpdPerPegawai',
+                'rataRataBiayaPerPegawai',
+                'usedBudget',
+                'remainingBudget'
+
             )
         );
     }

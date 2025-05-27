@@ -45,6 +45,9 @@
                     </x-nav-link>
 
                     @if(auth()->user()->role === 'admindept_hcm')
+                    <a class="inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 cursor-default select-none">
+                        Manajemen Laporan SPD
+                    </a>
                     <x-nav-link :href="route('spd.index')"
                         :active="request()->routeIs('spd.index')"
                         class="w-full px-4 py-2 text-left rounded-md 
@@ -57,6 +60,9 @@
                        {{ request()->routeIs('dpd.index') ? 'bg-blue-500 text-white' : 'text-gray-700' }}">
                         Data DPD
                     </x-nav-link>
+                    <a class="inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 cursor-default select-none">
+                        Manajemen Master Data
+                    </a>
                     <x-nav-link :href="route('departemen.index')"
                         :active="request()->routeIs('departemen.index')"
                         class="w-full px-4 py-2 text-left rounded-md 
@@ -69,13 +75,19 @@
                        {{ request()->routeIs('pegawai.index') ? 'bg-blue-500 text-white' : 'text-gray-700' }}">
                         Data Pegawai
                     </x-nav-link>
+                    <a class="inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 cursor-default select-none">
+                        Manajemen Anggaran Dinas
+                    </a>
                     <x-nav-link :href="route('rancangan.index')"
                         :active="request()->routeIs('rancangan.index')"
-                        class="w-full px-4 py-2 text-left rounded-md 
+                        class="w-full px-4 py-2 text-left rounded-md mb-3 
                        {{ request()->routeIs('rancangan.index') ? 'bg-blue-500 text-white' : 'text-gray-700' }}">
                         Pengajuan Anggaran
                     </x-nav-link>
                     @elseif(auth()->user()->role === 'tmhcm')
+                    <a class="inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 cursor-default select-none">
+                        Manajemen Anggaran Dinas
+                    </a>
                     <x-nav-link :href="route('periode.index')"
                         :active="request()->routeIs('periode.index')"
                         class="w-full px-4 py-2 text-left rounded-md 
@@ -88,6 +100,9 @@
                        {{ request()->routeIs('rancangan.index') ? 'bg-blue-500 text-white' : 'text-gray-700' }}">
                         Pengajuan Anggaran
                     </x-nav-link>
+                    <a class="inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 cursor-default select-none">
+                        Realisasi Anggaran Dinas
+                    </a>
                     <x-nav-link :href="route('dpd.index')"
                         :active="request()->routeIs('dpd.index')"
                         class="w-full px-4 py-2 text-left rounded-md 
@@ -101,11 +116,14 @@
                         Rekap Pelaporan SPD
                     </x-nav-link>
                     @elseif(auth()->user()->role === 'admindept')
+                    <a class="inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 cursor-default select-none">
+                        Manajemen Anggaran Dinas
+                    </a>
                     <x-nav-link :href="route('dpd.index')"
                         :active="request()->routeIs('dpd.index')"
                         class="w-full px-4 py-2 text-left rounded-md 
                        {{ request()->routeIs('dpd.index') ? 'bg-blue-500 text-white' : 'text-gray-700' }}">
-                        Data DPD
+                        Rekap Laporan DPD
                     </x-nav-link>
                     <x-nav-link :href="route('rancangan.index')"
                         :active="request()->routeIs('rancangan.index')"
@@ -114,11 +132,14 @@
                     </x-nav-link>
 
                     @if(auth()->user()->email === 'finec@admindept.com')
+                    <a class="inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 cursor-default select-none">
+                        Pelaporan dari HCM
+                    </a>
                     <x-nav-link :href="route('spd.pengajuan')"
                         :active="request()->routeIs('spd.pengajuan')"
                         class="w-full px-4 py-2 text-left rounded-md
                         {{ request()->routeIs('spd.pengajuan') ? 'bg-blue-500 text-white' : 'text-gray-700' }}">
-                        Ajuan Pelaporan SPD
+                        Pelaporan SPD
                     </x-nav-link>
                     @endif
                     @endif

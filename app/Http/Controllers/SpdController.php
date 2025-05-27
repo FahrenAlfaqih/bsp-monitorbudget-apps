@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AnggaranFix;
 use App\Models\Departemen;
 use App\Models\Dpd;
 use App\Models\Pegawai;
 use App\Models\PeriodeAnggaran;
+use App\Models\ReimburseRule;
 use App\Models\Spd;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -67,7 +69,7 @@ class SpdController extends Controller
 
 
         Spd::whereIn('id', $ids)->update(['status' => 'diajukan']);
-        Alert::success('Berhasil', 'SPD berhasil diajukan ke finance!');
+        Alert::success('Berhasil', 'Laporan SPD berhasil diajukan ke finance!');
         return back();
     }
 
@@ -92,8 +94,10 @@ class SpdController extends Controller
             return redirect()->route('spd.pengajuan')->with('error', 'SPD sudah diproses.');
         }
         $spd->load('details');
+        $pegawaiLevelId = $spd->pegawai->pegawai_level_id;
+        $reimburseRules = ReimburseRule::where('pegawai_level_id', $pegawaiLevelId)->get();
 
-        return view('spd.update-status', compact('spd'));
+        return view('spd.update-status', compact('spd', 'reimburseRules'));
     }
 
 
@@ -105,6 +109,31 @@ class SpdController extends Controller
             'tanggal_deklarasi' => 'required|date',
             'uraian' => 'required|string',
         ]);
+
+        // Ambil sisa anggaran fix departemen untuk periode SPD tersebut
+        $departemenId = $spd->departemen_id;
+        $periodeId = $spd->periode_id;
+
+        // Total anggaran fix yang disetujui untuk departemen dan periode terkait
+        $totalAnggaranFix = AnggaranFix::where('departemen_id', $departemenId)
+            ->where('periode_id', $periodeId)
+            ->sum('jumlah_anggaran');
+
+        // Total DPD yang sudah terpakai pada periode dan departemen tsb (kecuali SPD yang sedang diproses)
+        $totalDpdTerpakai = Dpd::whereHas('spd', function ($query) use ($departemenId, $periodeId) {
+            $query->where('departemen_id', $departemenId)
+                ->where('periode_id', $periodeId);
+        })
+            ->where('spd_id', '!=', $spd->id) // exclude current SPD jika sudah ada DPD-nya
+            ->sum('total_biaya');
+
+        // Hitung sisa anggaran yang tersedia
+        $sisaAnggaran = $totalAnggaranFix - $totalDpdTerpakai;
+
+        if ($request->status === 'disetujui' && $request->total_biaya > $sisaAnggaran) {
+            Alert::warning('Perhatian', 'Total biaya melebihi sisa anggaran departemen yang tersedia (Rp ' . number_format($sisaAnggaran, 0, ',', '.') . '). Mohon sesuaikan biaya.');
+            return back()->withInput();
+        }
 
         $spd->update([
             'status' => $request->status,
@@ -128,9 +157,11 @@ class SpdController extends Controller
                 ]);
             }
         }
-        Alert::success('Berhasil', 'Status SPD berhasil diupdate!');
+
+        Alert::success('Berhasil', 'Persetujuan SPD berhasil diproses!');
         return redirect()->route('spd.pengajuan');
     }
+
 
 
 
