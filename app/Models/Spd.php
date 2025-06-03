@@ -50,4 +50,9 @@ class Spd extends Model
     {
         return $this->hasMany(SpdDetail::class, 'spd_id');
     }
+
+    public function totalBiayaDpd()
+    {
+        return $this->details->sum('nominal');
+    }
 }

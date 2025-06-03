@@ -200,19 +200,25 @@
 
                             @if ($periodeTerpilih && ($periodeTerpilih->sudahMengajukan ?? false))
                             <div class="mt-2 text-sm">
-                                @if ($periodeTerpilih->statusPengajuan === 'menunggu')
-                                <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
-                                    <span>Menunggu Persetujuan</span>
-                                </p>
-                                @elseif ($periodeTerpilih->statusPengajuan === 'disetujui')
-                                <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
-                                    <span>Disetujui</span>
-                                </p>
-                                @elseif ($periodeTerpilih->statusPengajuan === 'ditolak')
-                                <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
-                                    <span>Ditolak</span>
-                                </p>
-                                @endif
+    @if ($periodeTerpilih->statusPengajuan === 'menunggu')
+        <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
+            <span class="inline-block px-2 py-1 rounded-full text-white bg-yellow-500">
+                Menunggu Persetujuan
+            </span>
+        </p>
+    @elseif ($periodeTerpilih->statusPengajuan === 'disetujui')
+        <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
+            <span class="inline-block px-2 py-1 rounded-full text-white bg-green-500">
+                Disetujui
+            </span>
+        </p>
+    @elseif ($periodeTerpilih->statusPengajuan === 'ditolak')
+        <p class="mt-2 text-sm text-gray-600">Status Pengajuan:
+            <span class="inline-block px-2 py-1 rounded-full text-white bg-red-500">
+                Ditolak
+            </span>
+        </p>
+    @endif
                             </div>
                             @endif
 

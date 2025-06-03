@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Log;
+use App\Exports\SpdExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 
@@ -67,9 +69,11 @@ class SpdController extends Controller
             return back()->with('error', 'Pilih minimal satu SPD untuk diajukan.');
         }
 
-
         Spd::whereIn('id', $ids)->update(['status' => 'diajukan']);
+        $selectedSpds = Spd::whereIn('id', $ids)->with(['departemen', 'details'])->get();
+        $fileName = 'Laporan_SPD_Diajukan_' . date('Ymd_His') . '.xlsx';
         Alert::success('Berhasil', 'Laporan SPD berhasil diajukan ke finance!');
+        return Excel::download(new SpdExport($selectedSpds), $fileName);
         return back();
     }
 
