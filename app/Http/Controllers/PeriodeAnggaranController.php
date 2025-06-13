@@ -30,7 +30,7 @@ class PeriodeAnggaranController extends Controller
         $periodeExist = PeriodeAnggaran::whereYear('mulai', $tahun)->exists();
 
         if ($periodeExist) {
-            Alert::error('Gagal', 'Periode anggaran untuk tahun '. $tahun . ' sudah ada!');
+            Alert::error('Gagal', 'Periode anggaran untuk tahun ' . $tahun . ' sudah ada!');
             return redirect()->route('periode.index');
         }
 
@@ -56,9 +56,17 @@ class PeriodeAnggaranController extends Controller
         return redirect()->route('periode.index');
     }
 
-    public function edit($id)
+    public function handleEdit(Request $request)
     {
-        $periode = PeriodeAnggaran::findOrFail($id);
+        $periodeId = $request->input('periode_id');
+        $periode = PeriodeAnggaran::findOrFail($periodeId);
+        return view('periode_anggaran.update', compact('periode'));
+    }
+
+    public function edit()
+    {
+        $periodeId = session('periode_id');
+        $periode = PeriodeAnggaran::findOrFail($periodeId);
         return view('periode_anggaran.update', compact('periode'));
     }
 

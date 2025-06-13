@@ -12,11 +12,14 @@ use App\Events\AnggaranDisetujui;
 
 class RancanganAnggaranController extends Controller
 {
+
+
     public function index(Request $request)
     {
         $periodeList = PeriodeAnggaran::all();
         $departemenList = Departemen::all();
 
+        // Menyiapkan query untuk mengambil rancangan
         if (Auth::user()->role === 'tmhcm') {
             $query = RancanganAnggaran::with(['departemen', 'periode']);
 
@@ -35,8 +38,15 @@ class RancanganAnggaranController extends Controller
             $query->where('periode_id', $request->periode);
         }
 
+        // Ambil data rancangan berdasarkan filter
         $rancangan = $query->get();
 
+        // Jika request AJAX, kembalikan hasil tanpa mengubah URL
+        if ($request->ajax()) {
+            return view('rancangan._filterResult', compact('rancangan'));  // Mengembalikan hasil filter
+        }
+
+        // Jika bukan request AJAX, kembalikan hasil seperti biasa
         return view('rancangan.index', [
             'rancangan' => $rancangan,
             'periodeList' => $periodeList,

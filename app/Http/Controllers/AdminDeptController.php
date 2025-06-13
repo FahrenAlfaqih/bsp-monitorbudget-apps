@@ -186,8 +186,10 @@ class AdminDeptController extends Controller
             ->get()
             ->keyBy('status');
 
-        $jumlahSpdPerPegawai = DB::table('surat_perjalanan_dinas')
+        $jumlahSpdPerPegawai = DB::table('surat_perjalanan_dinas as s')
+            ->join('deklarasi_perjalanan_dinas as d', 's.id', '=', 'd.spd_id')
             ->where('departemen_id', $user->departemen->id)
+            ->whereBetween('d.tanggal_deklarasi', [$mulaiPeriode, $berakhirPeriode])
             ->select('nama_pegawai', DB::raw('COUNT(*) as jumlah_spd'))
             ->groupBy('nama_pegawai')
             ->orderByDesc('jumlah_spd')
@@ -197,6 +199,7 @@ class AdminDeptController extends Controller
         $rataRataBiayaPerPegawai = DB::table('deklarasi_perjalanan_dinas as d')
             ->join('surat_perjalanan_dinas as s', 'd.spd_id', '=', 's.id')
             ->where('s.departemen_id', $user->departemen->id)
+            ->whereBetween('d.tanggal_deklarasi', [$mulaiPeriode, $berakhirPeriode])
             ->select('s.nama_pegawai', DB::raw('AVG(d.total_biaya) as rata_rata_biaya'))
             ->groupBy('s.nama_pegawai')
             ->orderByDesc('rata_rata_biaya')
@@ -273,6 +276,7 @@ class AdminDeptController extends Controller
                 ->exists();
             return $item;
         });
+
         $periodeIdDipilih = $request->get('periode_id') ?? $semuaPeriode->first()?->id;
         $periodeTerpilih = $periodeIdDipilih ? PeriodeAnggaran::find($periodeIdDipilih) : null;
 
@@ -286,6 +290,7 @@ class AdminDeptController extends Controller
                 ->first();
         }
 
+
         if ($periodeTerpilih) {
             $periodeTerpilih->sudahMengajukan = $pengajuan ? true : false;
             $periodeTerpilih->statusPengajuan = $pengajuan->status ?? null;
@@ -293,6 +298,16 @@ class AdminDeptController extends Controller
 
         $mulaiPeriode = $periodeTerpilih->mulai ?? now()->startOfYear();
         $berakhirPeriode = $periodeTerpilih->berakhir ?? now()->endOfYear();
+
+        $totalSpd = Spd::whereBetween('tanggal_berangkat', [$mulaiPeriode, $berakhirPeriode])->count();
+        $totalDpd = Dpd::whereBetween('tanggal_deklarasi', [$mulaiPeriode, $berakhirPeriode])->count();
+        $spdDitolak = Spd::where('status', 'ditolak')->whereBetween('tanggal_berangkat', [$mulaiPeriode, $berakhirPeriode])->count();
+        $spdDisetujui = Spd::where('status', 'disetujui')->whereBetween('tanggal_berangkat', [$mulaiPeriode, $berakhirPeriode])->count();
+        $spdDiajukan = Spd::where('status', 'diajukan')->whereBetween('tanggal_berangkat', [$mulaiPeriode, $berakhirPeriode])->count();
+
+        if ($spdDitolak > 0) {
+            Alert::warning('Perhatian', 'Ada ' . $spdDitolak . ' SPD yang ditolak. Silakan periksa kembali.');
+        }
 
         $totalAnggaran = AnggaranFix::where('departemen_id', $user->departemen->id)
             ->where('periode_id', $periodeTerpilih->id)
@@ -308,10 +323,8 @@ class AdminDeptController extends Controller
         $periodeTerpilih->total_pengeluaran = $totalPengeluaran;
         $periodeTerpilih->sisa_anggaran = $totalAnggaran - $totalPengeluaran;
 
-        //pie chart progress anggaran
         $usedBudget = $totalPengeluaran;
         $remainingBudget = max($totalAnggaran - $totalPengeluaran, 0);
-
 
         $topKaryawan = DB::table('deklarasi_perjalanan_dinas as d')
             ->join('surat_perjalanan_dinas as s', 'd.spd_id', '=', 's.id')
@@ -345,16 +358,6 @@ class AdminDeptController extends Controller
             ->limit(5)
             ->get();
 
-        $totalSpd = Spd::count();
-        $totalDpd = Dpd::count();
-        $spdDitolak = Spd::where('status', 'ditolak')->count();
-        if ($spdDitolak > 0) {
-            Alert::warning('Perhatian', 'Ada ' . $spdDitolak . ' SPD yang ditolak. Silakan periksa kembali.');
-        }
-        $spdDisetujui = Spd::where('status', 'disetujui')->count();
-        $spdDiajukan = Spd::where('status', 'diajukan')->count();
-
-
         $totalAnggaranDisetujui = 0;
         if ($periodeTerpilih && $user->departemen) {
             $totalAnggaranDisetujui = AnggaranFix::where('departemen_id', $user->departemen->id)
@@ -377,37 +380,30 @@ class AdminDeptController extends Controller
         }
 
         $periodeIdFilter = $request->get('periode_id');
-        $filterByMonth = $request->get('filter_by_month'); // true/false untuk filter bulan
-        $monthStart = $request->get('month_start'); // yyyy-mm
-        $monthEnd = $request->get('month_end');     // yyyy-mm
+        $periodeTerpilih = PeriodeAnggaran::find($periodeIdFilter);
+        $mulaiPeriode = $periodeTerpilih->mulai ?? now()->startOfYear();
+        $berakhirPeriode = $periodeTerpilih->berakhir ?? now()->endOfYear();
 
-        // Ambil semua periode (dipakai di view dropdown filter)
-        $semuaPeriode = PeriodeAnggaran::orderBy('mulai', 'desc')->get();
-
-        // 1. Jumlah SPD per periode (line chart)
         $queryPeriode = DB::table('surat_perjalanan_dinas as spd')
             ->join('periode_anggaran as p', 'spd.periode_id', '=', 'p.id')
             ->select('p.nama_periode', 'p.mulai', DB::raw('COUNT(spd.id) as jumlah_spd'))
-            ->groupBy('p.nama_periode', 'p.mulai') // tambahkan p.mulai
+            ->groupBy('p.nama_periode', 'p.mulai')
             ->orderBy('p.mulai');
+        $jumlahSpdPerPeriode = $queryPeriode->get();
+
+        $querySpdPerBulan = DB::table('surat_perjalanan_dinas as spd')
+            ->select(DB::raw("DATE_FORMAT(spd.tanggal_berangkat, '%Y-%m') as bulan"), DB::raw('COUNT(spd.id) as jumlah_spd'))
+            ->groupBy(DB::raw("DATE_FORMAT(spd.tanggal_berangkat, '%Y-%m')"))
+            ->orderBy('bulan');
 
 
         if ($periodeIdFilter) {
-            $queryPeriode->where('spd.periode_id', $periodeIdFilter);
+            $querySpdPerBulan->whereBetween('spd.tanggal_berangkat', [$mulaiPeriode, $berakhirPeriode]);
         }
 
-        $jumlahSpdPerPeriode = $queryPeriode->get();
-
-        // 2. Jika filter bulan diaktifkan, jumlah SPD per bulan (yyyy-mm)
-        $jumlahSpdPerBulan = collect();
-        if ($filterByMonth && $monthStart && $monthEnd) {
-            $jumlahSpdPerBulan = DB::table('surat_perjalanan_dinas')
-                ->select(DB::raw("DATE_FORMAT(tanggal_berangkat, '%Y-%m') as bulan"), DB::raw('COUNT(id) as jumlah_spd'))
-                ->whereBetween(DB::raw("DATE_FORMAT(tanggal_berangkat, '%Y-%m')"), [$monthStart, $monthEnd])
-                ->groupBy('bulan')
-                ->orderBy('bulan')
-                ->get();
-        }
+        $jumlahSpdPerBulan = $querySpdPerBulan->get();
+        $labels = $jumlahSpdPerBulan->pluck('bulan');  // Label bulan (format YYYY-MM)
+        $data = $jumlahSpdPerBulan->pluck('jumlah_spd');  // Jumlah SPD per bulan
 
         $biayaPerBulan = DB::table('deklarasi_perjalanan_dinas as d')
             ->join('surat_perjalanan_dinas as s', 'd.spd_id', '=', 's.id')
@@ -428,8 +424,10 @@ class AdminDeptController extends Controller
             ->get()
             ->keyBy('status');
 
-        $jumlahSpdPerPegawai = DB::table('surat_perjalanan_dinas')
+        $jumlahSpdPerPegawai = DB::table('surat_perjalanan_dinas as s')
+            ->join('deklarasi_perjalanan_dinas as d', 's.id', '=', 'd.spd_id')
             ->where('departemen_id', $user->departemen->id)
+            ->whereBetween('d.tanggal_deklarasi', [$mulaiPeriode, $berakhirPeriode])
             ->select('nama_pegawai', DB::raw('COUNT(*) as jumlah_spd'))
             ->groupBy('nama_pegawai')
             ->orderByDesc('jumlah_spd')
@@ -439,39 +437,39 @@ class AdminDeptController extends Controller
         $rataRataBiayaPerPegawai = DB::table('deklarasi_perjalanan_dinas as d')
             ->join('surat_perjalanan_dinas as s', 'd.spd_id', '=', 's.id')
             ->where('s.departemen_id', $user->departemen->id)
+            ->whereBetween('d.tanggal_deklarasi', [$mulaiPeriode, $berakhirPeriode])
             ->select('s.nama_pegawai', DB::raw('AVG(d.total_biaya) as rata_rata_biaya'))
             ->groupBy('s.nama_pegawai')
             ->orderByDesc('rata_rata_biaya')
             ->limit(10)
             ->get();
+
         return view(
             'dashboard.admindept_hcm',
             compact(
-                'rancangan',
-                'semuaPeriode',
-                'periodeTerpilih',
-                'periodeAktif',
+                'jumlahSpdPerPeriode',
+                'jumlahSpdPerBulan',
+                'semuaPeriode',         // Pastikan hanya satu kali
+                'periodeTerpilih',      // Pastikan hanya satu kali
+                'labels',
+                'data',
                 'totalSpd',
                 'totalDpd',
                 'spdDitolak',
                 'spdDisetujui',
                 'spdDiajukan',
-                'topKaryawan',
-                'topBudget',
-                'topTujuanDinas',
-                'totalAnggaranDisetujui',
-                'jumlahSpdPerPeriode',
-                'jumlahSpdPerBulan',
-                'filterByMonth',
-                'monthStart',
-                'monthEnd',
-                'biayaPerBulan',
                 'spdStatusCount',
+                'rancangan',
+                'periodeAktif',
+                'biayaPerBulan',
                 'jumlahSpdPerPegawai',
                 'rataRataBiayaPerPegawai',
                 'usedBudget',
-                'remainingBudget'
-
+                'totalAnggaranDisetujui',
+                'remainingBudget',
+                'topKaryawan',
+                'topBudget',
+                'topTujuanDinas'
             )
         );
     }

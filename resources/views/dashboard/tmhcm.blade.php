@@ -5,30 +5,52 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <p  class="mb-4">Selamat datang, {{ auth()->user()->name }}</p>
 
-            <form method="GET" action="{{ route('dashboard.tmhcm') }}" class="flex flex-wrap gap-3 sm:gap-4 items-end">
-                <div>
-                    <select name="periode_id" id="periode_id"
-                        class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">-- Semua Periode --</option>
-@foreach($periodesDropdown as $periode)
-                        <option value="{{ $periode->id }}" {{ request('periode_id') == $periode->id ? 'selected' : '' }}>
-                            {{ $periode->nama_periode }}
-                        </option>
-                        @endforeach
-                    </select>
+<form method="POST" action="{{ route('dashboard.tmhcm.setPeriode') }}" class="flex flex-wrap gap-3 sm:gap-4 items-end">
+    @csrf
+    <div>
+        <select name="periode_id" id="periode_id"
+            class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">-- Semua Periode --</option>
+            @foreach($periodesDropdown as $periode)
+                <option value="{{ $periode->id }}" {{ session('periode_id') == $periode->id ? 'selected' : '' }}>
+                    {{ $periode->nama_periode }}
+                </option>
+            @endforeach
+        </select>
 
-                    <button type="submit"
-                        class="mt-5 ml-3 text-sm px-4 py-2 border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                        <i class="fas fa-filter mr-1"></i> Tampilkan
-                    </button>
-                </div>
-            </form>
+        <button type="submit"
+            class="mt-5 ml-3 text-sm px-4 py-2 border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <i class="fas fa-filter mr-1"></i> Tampilkan
+        </button>
+    </div>
+</form>
+
 
             {{-- 1. LINE CHART: Trend Anggaran Periode --}}
             <div class="bg-white rounded-lg shadow p-4 mb-8 mt-6">
                 <h3 class="font-semibold mb-4">Trend Anggaran Perjalanan Dinas per Periode</h3>
                 <canvas id="trendAnggaranChart" height="100"></canvas>
             </div>
+
+            <form method="POST" action="{{ route('dashboard.tmhcm.setDepartment') }}" class="flex flex-wrap gap-3 sm:gap-4 items-end">
+    @csrf
+    <div>
+        <select name="departemen_id" id="departemen_id"
+            class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">-- Semua Departemen --</option>
+            @foreach($departemens as $departemen)
+                <option value="{{ $departemen }}" {{ session('departemen_id') == $departemen ? 'selected' : '' }}>
+                    {{ $departemen }}
+                </option>
+            @endforeach
+        </select>
+
+        <button type="submit"
+            class="mt-5 ml-3 text-sm px-4 py-2 border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <i class="fas fa-filter mr-1"></i> Tampilkan
+        </button>
+    </div>
+</form>
 
             <div class="bg-white rounded-lg shadow p-4 mb-8 mt-6">
                 <h3 class="font-semibold mb-4">Perbandingan Anggaran Dinas per Departemen per Periode</h3>
@@ -144,7 +166,7 @@
     </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
- const periodes = @json($periodes);
+    const periodes = @json($periodes);
     const datasets = @json($datasets);
 
     new Chart(document.getElementById('anggaranGroupedBar'), {

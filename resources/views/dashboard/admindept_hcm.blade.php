@@ -5,27 +5,25 @@
         <div class="mt-3">
 
             <div class="mb-6">
+                <form method="GET" action="{{ route('dashboard.admindept_hcm') }}"
+                class="flex flex-wrap gap-3 sm:gap-4 items-end mb-4">
+                <select name="periode_id" id="periode_id"
+                    class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">-- Semua Periode --</option>
+                    @foreach ($semuaPeriode as $periode)
+                    <option value="{{ $periode->id }}"
+                        {{ request('periode_id') == $periode->id ? 'selected' : '' }}>
+                        {{ $periode->nama_periode }}
+                    </option>
+                    @endforeach
+                </select>
+                <button type="submit"
+                    class="mt-5 text-sm px-4 py-2 border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <i class="fas fa-filter mr-1"></i> Tampilkan
+                </button>
+                </form>
                 <div class="bg-white rounded-xl shadow p-4 h-full flex flex-col justify-between">
-                    <h3 class="text-md font-semibold mb-4">Jumlah Laporan SPD Seluruh Departemen Per Periode</h3>
-                    {{-- Form Filter Bulan --}}
-                    <form method="GET" action="{{ route('dashboard.admindept_hcm') }}"
-                        class="flex flex-wrap items-center gap-4 mb-4">
-                        <label for="month_start" class="font-medium text-gray-700">Dari Bulan:</label>
-                        <input type="month" name="month_start" id="month_start"
-                            value="{{ request('month_start') }}"
-                            class="border border-gray-300 rounded px-3 py-1 text-sm text-gray-700" />
-
-                        <label for="month_end" class="font-medium text-gray-700">Sampai Bulan:</label>
-                        <input type="month" name="month_end" id="month_end" value="{{ request('month_end') }}"
-                            class="border border-gray-300 rounded px-3 py-1 text-sm text-gray-700" />
-
-                        <button type="submit"
-                            class="text-sm px-4 py-2 border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                            <i class="fas fa-filter mr-1"></i> Tampilkan
-                        </button>
-                    </form>
-
-                    {{-- Chart --}}
+                    <h3 class="text-md font-semibold mb-4">Jumlah Laporan SPD Seluruh Departemen Per Bulan</h3>
                     <canvas id="jumlahSpdChart" height="200"></canvas>
                 </div>
             </div>
@@ -88,46 +86,6 @@
 
             
             <h3 class="text-lg font-semibold mt-4">Top List Anggaran Departemen </h3>
-            <form method="GET" action="{{ route('dashboard.admindept_hcm') }}"
-                class="flex flex-wrap gap-3 sm:gap-4 items-end mb-4">
-                <select name="periode_id" id="periode_id"
-                    class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">-- Semua Periode --</option>
-                    @foreach ($semuaPeriode as $periode)
-                    <option value="{{ $periode->id }}"
-                        {{ request('periode_id') == $periode->id ? 'selected' : '' }}>
-                        {{ $periode->nama_periode }}
-                    </option>
-                    @endforeach
-                </select>
-                <button type="submit"
-                    class="mt-5 text-sm px-4 py-2 border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                    <i class="fas fa-filter mr-1"></i> Tampilkan
-                </button>
-            </form>
-
-            <!-- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
-                    <h4 class="text-lg font-bold mb-2">Total Anggaran Perjalanan Dinas</h4>
-                    <p class="text-lg font-semibold text-green-600">
-                        Rp {{ number_format($periodeTerpilih->totalAnggaranDisetujui ?? 0, 0, ',', '.') }}
-                    </p>
-                </div>
-                <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
-                    <h4 class="text-lg font-bold mb-2">Total Pengeluaran</h4>
-                    <p class="text-lg font-semibold text-red-600">
-                        Rp {{ number_format($periodeTerpilih->total_pengeluaran ?? 0, 0, ',', '.') }}
-                    </p>
-                </div>
-                <div class="bg-white rounded-xl shadow p-4 flex flex-col justify-between">
-                    <h4 class="text-lg font-bold mb-2">Sisa Anggaran</h4>
-                    <p class="text-lg font-semibold text-yellow-600">
-                        Rp {{ number_format($periodeTerpilih->sisa_anggaran ?? 0, 0, ',', '.') }}
-                    </p>
-                </div>
-            </div> -->
-
-
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                 {{-- Top Karyawan --}}
                 <div class="bg-white rounded-2xl shadow-lg p-6">
@@ -263,69 +221,37 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-          // --- Data Pie Chart ---
-new Chart(document.getElementById('pieAnggaran').getContext('2d'), {
-    type: 'doughnut',
+
+      let labels = @json($labels);  // Labels untuk bulan (format YYYY-MM)
+let data = @json($data);  // Jumlah SPD per bulan
+
+new Chart(document.getElementById('jumlahSpdChart'), {
+    type: 'line',
     data: {
-        labels: ['Terpakai', 'Sisa'],
+        labels: labels, // Labels untuk bulan
         datasets: [{
-            data: [{{ $usedBudget }}, {{ $remainingBudget }}],
-            backgroundColor: ['#22c55e', '#eab308'],
+            label: 'Jumlah SPD',
+            data: data,  // Jumlah SPD per bulan
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37, 99, 235, 0.3)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4,
+            pointHoverRadius: 6,
         }]
     },
     options: {
-        maintainAspectRatio: true, 
-        aspectRatio: 1,             
-        layout: {
-            padding: 10
-        },
-        plugins: {
-            legend: {
-                position: 'bottom'
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1,  // Increment angka pada sumbu Y setiap 1
+                }
             }
         }
     }
 });
-        const filterByMonth = @json($filterByMonth);
-
-        let labels = [];
-        let data = [];
-
-        if (filterByMonth) {
-            labels = @json($jumlahSpdPerBulan -> pluck('bulan'));
-            data = @json($jumlahSpdPerBulan -> pluck('jumlah_spd'));
-        } else {
-            labels = @json($jumlahSpdPerPeriode -> pluck('nama_periode'));
-            data = @json($jumlahSpdPerPeriode -> pluck('jumlah_spd'));
-        }
-
-        new Chart(document.getElementById('jumlahSpdChart'), {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Jumlah SPD',
-                    data: data,
-                    borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.3)',
-                    fill: true,
-                    tension: 0.3,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1,
-                        }
-                    }
-                }
-            }
-        });
 
         // Data 1: Bar Chart Total Biaya Per Bulan
         const biayaPerBulanLabels = @json($biayaPerBulan -> pluck('bulan'));
@@ -353,6 +279,30 @@ new Chart(document.getElementById('pieAnggaran').getContext('2d'), {
             }
         });
 
+        // Data 2 : Pie chart Penggunaan Anggaran
+        new Chart(document.getElementById('pieAnggaran').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Terpakai', 'Sisa'],
+        datasets: [{
+            data: [{{ $usedBudget }}, {{ $remainingBudget }}],
+            backgroundColor: ['#22c55e', '#eab308'],
+        }]
+    },
+    options: {
+        maintainAspectRatio: true, 
+        aspectRatio: 1,             
+        layout: {
+            padding: 10
+        },
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
         // Data 3: Horizontal Bar Chart Jumlah SPD Per Pegawai
         const spdPegawaiLabels = @json($jumlahSpdPerPegawai -> pluck('nama_pegawai'));
         const spdPegawaiData = @json($jumlahSpdPerPegawai -> pluck('jumlah_spd'));
@@ -371,7 +321,13 @@ new Chart(document.getElementById('pieAnggaran').getContext('2d'), {
                 indexAxis: 'y',
                 scales: {
                     x: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return Math.round(value);
+                            },
+                        stepSize: 1, 
+                        }
                     }
                 }
             }
@@ -402,6 +358,8 @@ new Chart(document.getElementById('pieAnggaran').getContext('2d'), {
                 }
             }
         });
+
+
     </script>
 
 

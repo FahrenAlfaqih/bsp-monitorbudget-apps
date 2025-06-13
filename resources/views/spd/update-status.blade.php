@@ -51,19 +51,7 @@
 
                     {{-- Total Biaya --}}
                     <div id="biayaContainer">
-                        <div id="biayaGroup" class="mb-3">
-                            <x-input
-                                name="total_biaya_display"
-                                label="Total Biaya"
-                                value="{{ old('total_biaya') }}"
-                                id="total_biaya_display" />
-                            <input type="hidden" name="total_biaya" id="total_biaya">
-                            @error('total_biaya')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
                         <h1 class="block text-sm font-medium text-gray-700 mb-1">Rincian Biaya Perjalanan Dinas</h1>
-
                         <table class="min-w-full border border-gray-300 text-sm mb-4">
                             <thead>
                                 <tr class="bg-gray-100">
@@ -98,6 +86,20 @@
                             </tfoot>
 
                         </table>
+
+                        <div id="biayaGroup" class="mb-3">
+                            <x-input
+                                name="total_biaya_display"
+                                label="Total Biaya yang Disetujui"
+                                value="{{ old('total_biaya') }}"
+                                id="total_biaya_display"
+                                required />
+
+                            <input type="hidden" name="total_biaya" id="total_biaya">
+                            @error('total_biaya')
+                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
                     {{-- PR --}}

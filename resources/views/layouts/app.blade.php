@@ -25,12 +25,16 @@
 
 
 
+
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
 
 <body class="font-sans antialiased">
+
+
     <div class="min-h-screen flex">
 
         <aside class="fixed top-0 left-0 h-full w-64 text-black p-4 shadow-md rounded-r-lg overflow-auto">
@@ -149,7 +153,7 @@
                 </div>
             </nav>
         </aside>
-        <!-- Konten Utama -->
+
         <div class="ml-64 flex-1 flex flex-col min-h-screen">
             <!-- Header fixed -->
             <header class="fixed top-0 left-64 right-0  p-6 z-30 shadow-sm bg-white rounded-md ml-3">
@@ -161,8 +165,6 @@
                 @endif
             </header>
 
-
-            <!-- Spacer supaya konten main tidak tertutup header -->
             <div class=" h-24">
             </div>
 
@@ -177,82 +179,6 @@
         </div>
 
     </div>
-
-    <!-- <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropdowns = [{
-                    buttonId: 'spdDropdown',
-                    menuId: 'spdDropdownMenu'
-                },
-                {
-                    buttonId: 'departemenDropdown',
-                    menuId: 'departemenDropdownMenu'
-                },
-                {
-                    buttonId: 'periodeDropdown',
-                    menuId: 'periodeDropdownMenu'
-                }
-            ];
-
-            dropdowns.forEach(({
-                buttonId,
-                menuId
-            }) => {
-                const button = document.getElementById(buttonId);
-                const menu = document.getElementById(menuId);
-
-                if (button && menu) {
-                    button.addEventListener('click', function() {
-                        const isOpen = menu.classList.contains('block');
-
-                        // Sembunyikan semua dropdown lain
-                        dropdowns.forEach(({
-                            menuId: otherMenuId
-                        }) => {
-                            const otherMenu = document.getElementById(otherMenuId);
-                            if (otherMenu && otherMenu !== menu) {
-                                otherMenu.classList.add('hidden');
-                                otherMenu.classList.remove('block');
-                            }
-                        });
-
-                        // Toggle menu yang diklik
-                        if (isOpen) {
-                            menu.classList.add('hidden');
-                            menu.classList.remove('block');
-                        } else {
-                            menu.classList.remove('hidden');
-                            menu.classList.add('block');
-                        }
-                    });
-                }
-            });
-
-            // Klik di luar menu akan menutup dropdown
-            document.addEventListener('click', function(event) {
-                const isClickInsideDropdown = dropdowns.some(({
-                    buttonId,
-                    menuId
-                }) => {
-                    const button = document.getElementById(buttonId);
-                    const menu = document.getElementById(menuId);
-                    return button?.contains(event.target) || menu?.contains(event.target);
-                });
-
-                if (!isClickInsideDropdown) {
-                    dropdowns.forEach(({
-                        menuId
-                    }) => {
-                        const menu = document.getElementById(menuId);
-                        if (menu) {
-                            menu.classList.add('hidden');
-                            menu.classList.remove('block');
-                        }
-                    });
-                }
-            });
-        });
-    </script> -->
 
     <script>
         $(document).ready(function() {

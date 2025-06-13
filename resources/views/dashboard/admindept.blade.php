@@ -2,8 +2,23 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <p class="mb-4">Selamat datang, Admin Departemen {{ auth()->user()->name }}!</p>
-
+            <p class="mb-4">Selamat datang, Admin  {{ auth()->user()->name }}!</p>
+            <form method="GET" action="{{ route('dashboard.admindept') }}" 
+            class="flex flex-wrap gap-3 sm:gap-4 items-end mb-4 mt-3">
+                <select name="periode_id" id="periode_id"
+                    class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">-- Semua Periode --</option>
+                    @foreach($semuaPeriode as $periode)
+                    <option value="{{ $periode->id }}" {{ request('periode_id') == $periode->id ? 'selected' : '' }}>
+                        {{ $periode->nama_periode }}
+                    </option>
+                    @endforeach
+                </select>
+                <button type="submit"
+                    class="px-4 py-2 text-sm border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <i class="fas fa-filter mr-1"></i> Tampilkan
+                </button>
+            </form>
 
 
 <div class="max-w-7xl mx-auto">
@@ -46,22 +61,6 @@
 
 </div>
             <h3 class="text-lg font-semibold mt-4">Top List Anggaran Departemen </h3>
-            <form method="GET" action="{{ route('dashboard.admindept') }}" 
-            class="flex flex-wrap gap-3 sm:gap-4 items-end mb-4 mt-3">
-                <select name="periode_id" id="periode_id"
-                    class="text-sm px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 transition hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">-- Semua Periode --</option>
-                    @foreach($semuaPeriode as $periode)
-                    <option value="{{ $periode->id }}" {{ request('periode_id') == $periode->id ? 'selected' : '' }}>
-                        {{ $periode->nama_periode }}
-                    </option>
-                    @endforeach
-                </select>
-                <button type="submit"
-                    class="px-4 py-2 text-sm border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                    <i class="fas fa-filter mr-1"></i> Tampilkan
-                </button>
-            </form>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 mb-6">
                 {{-- Top Karyawan --}}
@@ -192,9 +191,9 @@
         console.log(data);
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // --- Data Line Chart ---
+    // --- Data Line Chart --- 
     const trendLabels = @json($trendDinas->pluck('tanggal'));
     const jumlahDinas = @json($trendDinas->pluck('jumlah_dinas'));
     const totalBiaya = @json($trendDinas->pluck('total_biaya'));
@@ -235,123 +234,135 @@
                     type: 'linear',
                     display: true,
                     position: 'left',
-                    title: { display: true, text: 'Jumlah Dinas' }
+                    title: { display: true, text: 'Jumlah Dinas' },
+                    ticks: {
+                        beginAtZero: true,   // Mulai dari angka 0
+                        stepSize: 1,         // Increment angka di sumbu Y setiap 1
+                        callback: function(value) {
+                            return Math.round(value); // Membulatkan angka di sumbu Y
+                        }
+                    }
                 },
                 y2: {
                     type: 'linear',
                     display: true,
                     position: 'right',
                     title: { display: true, text: 'Total Biaya (Rp)' },
-                    grid: { drawOnChartArea: false }
+                    grid: { drawOnChartArea: false },
+                    ticks: {
+                        beginAtZero: true,   // Mulai dari angka 0
+                        stepSize: 1000000,   // Increment per juta untuk Total Biaya
+                        callback: function(value) {
+                            return Math.round(value); // Membulatkan angka di sumbu Y2
+                        }
+                    }
                 }
             }
         }
     });
 
-    
-
-    // --- Data Pie Chart ---
-new Chart(document.getElementById('pieAnggaran').getContext('2d'), {
-    type: 'doughnut',
-    data: {
-        labels: ['Terpakai', 'Sisa'],
-        datasets: [{
-            data: [{{ $usedBudget }}, {{ $remainingBudget }}],
-            backgroundColor: ['#22c55e', '#eab308'],
-        }]
-    },
-    options: {
-        maintainAspectRatio: true, 
-        aspectRatio: 1,             
-        layout: {
-            padding: 10
+    // --- Data Pie Chart --- 
+    new Chart(document.getElementById('pieAnggaran').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Terpakai', 'Sisa'],
+            datasets: [{
+                data: [{{ $usedBudget }}, {{ $remainingBudget }}],
+                backgroundColor: ['#22c55e', '#eab308'],
+            }]
         },
-        plugins: {
-            legend: {
-                position: 'bottom'
+        options: {
+            maintainAspectRatio: true, 
+            aspectRatio: 1,             
+            layout: { padding: 10 },
+            plugins: {
+                legend: { position: 'bottom' }
             }
         }
-    }
-});
+    });
 
- // Data 1: Bar Chart Total Biaya Per Bulan
-        const biayaPerBulanLabels = @json($biayaPerBulan -> pluck('bulan'));
-        const biayaPerBulanData = @json($biayaPerBulan -> pluck('total_biaya'));
+    const biayaPerBulanLabels = @json($biayaPerBulan->pluck('bulan'));
+    const biayaPerBulanData = @json($biayaPerBulan->pluck('total_biaya'));
 
-        new Chart(document.getElementById('biayaPerBulanChart'), {
-            type: 'bar',
-            data: {
-                labels: biayaPerBulanLabels,
-                datasets: [{
-                    label: 'Total Biaya Perjalanan (Rp)',
-                    data: biayaPerBulanData,
-                    backgroundColor: '#2563eb',
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: val => 'Rp ' + val.toLocaleString('id-ID')
-                        }
+    new Chart(document.getElementById('biayaPerBulanChart'), {
+        type: 'bar',
+        data: {
+            labels: biayaPerBulanLabels,
+            datasets: [{
+                label: 'Total Biaya Perjalanan (Rp)',
+                data: biayaPerBulanData,
+                backgroundColor: '#2563eb',
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: val => 'Rp ' + val.toLocaleString('id-ID')
                     }
                 }
             }
-        });
+        }
+    });
 
+    // Data 3: Horizontal Bar Chart Jumlah SPD Per Pegawai
+    const spdPegawaiLabels = @json($jumlahSpdPerPegawai->pluck('nama_pegawai'));
+    const spdPegawaiData = @json($jumlahSpdPerPegawai->pluck('jumlah_spd'));
 
-        // Data 3: Horizontal Bar Chart Jumlah SPD Per Pegawai
-        const spdPegawaiLabels = @json($jumlahSpdPerPegawai -> pluck('nama_pegawai'));
-        const spdPegawaiData = @json($jumlahSpdPerPegawai -> pluck('jumlah_spd'));
-
-        new Chart(document.getElementById('jumlahSpdPerPegawaiChart'), {
-            type: 'bar',
-            data: {
-                labels: spdPegawaiLabels,
-                datasets: [{
-                    label: 'Jumlah SPD',
-                    data: spdPegawaiData,
-                    backgroundColor: '#2563eb',
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                scales: {
-                    x: {
-                        beginAtZero: true
+    new Chart(document.getElementById('jumlahSpdPerPegawaiChart'), {
+        type: 'bar',
+        data: {
+            labels: spdPegawaiLabels,
+            datasets: [{
+                label: 'Jumlah SPD',
+                data: spdPegawaiData,
+                backgroundColor: '#2563eb',
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    beginAtZero: true,  
+                    ticks: {
+                        callback: function(value) {
+                            return Math.round(value); 
+                        },
+                        stepSize: 1, 
                     }
                 }
             }
-        });
+        }
+    });
 
-        // Data 4: Bar Chart Rata-rata Biaya Per Pegawai
-        const rataRataBiayaLabels = @json($rataRataBiayaPerPegawai -> pluck('nama_pegawai'));
-        const rataRataBiayaData = @json($rataRataBiayaPerPegawai -> pluck('rata_rata_biaya'));
+    // Data 4: Bar Chart Rata-rata Biaya Per Pegawai
+    const rataRataBiayaLabels = @json($rataRataBiayaPerPegawai->pluck('nama_pegawai'));
+    const rataRataBiayaData = @json($rataRataBiayaPerPegawai->pluck('rata_rata_biaya'));
 
-        new Chart(document.getElementById('rataRataBiayaChart'), {
-            type: 'bar',
-            data: {
-                labels: rataRataBiayaLabels,
-                datasets: [{
-                    label: 'Rata-rata Biaya (Rp)',
-                    data: rataRataBiayaData,
-                    backgroundColor: '#f59e0b',
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: val => 'Rp ' + val.toLocaleString('id-ID')
-                        }
+    new Chart(document.getElementById('rataRataBiayaChart'), {
+        type: 'bar',
+        data: {
+            labels: rataRataBiayaLabels,
+            datasets: [{
+                label: 'Rata-rata Biaya (Rp)',
+                data: rataRataBiayaData,
+                backgroundColor: '#f59e0b',
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: val => 'Rp ' + val.toLocaleString('id-ID')
                     }
                 }
             }
-        });
-
+        }
+    });
 </script>
+
 
 
 </x-app-layout>

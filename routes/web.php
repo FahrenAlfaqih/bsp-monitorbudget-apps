@@ -83,7 +83,16 @@ Route::middleware(['auth', 'role:admindept'])->group(function () {
 
 Route::middleware(['auth', 'role:tmhcm'])->group(function () {
     Route::get('/dashboard/tmhcm', [TmController::class, 'dashboard'])->name('dashboard.tmhcm');
-    Route::resource('periode', PeriodeAnggaranController::class);
+    Route::post('/dashboard/tmhcm/set-periode', [TmController::class, 'setPeriode'])->name('dashboard.tmhcm.setPeriode');
+    Route::post('/dashboard/tmhcm/set-department', [TmController::class, 'setDepartment'])->name('dashboard.tmhcm.setDepartment');
+
+    Route::get('/periode', [PeriodeAnggaranController::class, 'index'])->name('periode.index');
+    Route::get('/periode/create', [PeriodeAnggaranController::class, 'create'])->name('periode.create');
+
+    Route::post('/periode/edit', [PeriodeAnggaranController::class, 'handleEdit'])->name('periode.edit.post');
+    Route::post('/periode', [PeriodeAnggaranController::class, 'store'])->name('periode.store');
+
+    Route::put('/periode/{id}', [PeriodeAnggaranController::class, 'update'])->name('periode.update');
     Route::put('rancangan/{id}/status', [RancanganAnggaranController::class, 'updateStatus'])->name('rancangan.updateStatus');
 });
 

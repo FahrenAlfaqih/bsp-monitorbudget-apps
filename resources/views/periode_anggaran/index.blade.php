@@ -48,13 +48,16 @@
                                     {{ ucfirst($periode->status) }}
                                 </span>
                             </td>
-                            <td class="py-3 px-4 text-sm text-center">
-                                <a href="{{ route('periode.edit', $periode->id) }}"
-                                    class="inline-block px-3 py-1 text-sm text-white bg-yellow-500 hover:bg-yellow-600 rounded-lg transition">
-                                    Edit
-                                </a>
-
+                            <td class="py-3 px-4 text-sm">
+                                <form method="POST" action="{{ route('periode.edit.post') }}">
+                                    @csrf
+                                    <input type="hidden" name="periode_id" value="{{ $periode->id }}">
+                                    <button type="submit" class="inline-block px-3 py-1 text-sm text-white bg-yellow-500 hover:bg-yellow-600 rounded-lg transition">
+                                        Edit
+                                    </button>
+                                </form>
                             </td>
+
                         </tr>
                         @endforeach
                     </tbody>
