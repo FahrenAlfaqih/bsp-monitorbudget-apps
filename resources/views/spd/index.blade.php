@@ -85,6 +85,12 @@
                         <i class="fas fa-filter mr-1"></i> Filter
                     </button>
 
+                    <a href="{{ route('spd.export-pdf', request()->query()) }}"
+                        class="mt-5 text-sm px-4 py-2 ml-4 border border-red-500 text-red-600 rounded-lg shadow-sm transition hover:bg-red-50 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-400">
+                        <i class="fas fa-file-pdf mr-1"></i> Cetak PDF
+                    </a>
+
+
                     <a href="{{ route('spd.index') }}"
                         class="mt-5 text-sm px-4 py-2 ml-4 border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
                         <i class="fas fa-sync-alt mr-1"></i> Reload

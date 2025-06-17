@@ -16,6 +16,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Log;
 use App\Exports\SpdExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 
@@ -297,5 +298,45 @@ class SpdController extends Controller
 
         Alert::success('Berhasil', 'Surat Perjalanan Dinas berhasil diupdate!');
         return redirect()->route('spd.index');
+    }
+
+
+    public function exportToPDF(Request $request)
+    {
+        $query = Spd::with(['departemen', 'user', 'details']);
+
+        // Filter berdasarkan input user
+        if ($request->filled('departemen')) {
+            $query->where('departemen_id', $request->departemen);
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('jenis_transport')) {
+            $query->where('jenis_transport', $request->jenis_transport);
+        }
+        if ($request->filled('nomor_spd')) {
+            $query->where('nomor_spd', $request->nomor_spd);
+        }
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('tanggal_berangkat', [$request->start_date, $request->end_date]);
+        } elseif ($request->filled('start_date')) {
+            $query->whereDate('tanggal_berangkat', '>=', $request->start_date);
+        } elseif ($request->filled('end_date')) {
+            $query->whereDate('tanggal_berangkat', '<=', $request->end_date);
+        }
+
+        $spds = $query->get();
+
+        // Kirimkan data ke view untuk PDF
+        $data = [
+            'spds' => $spds,
+            'filters' => $request->all(),
+        ];
+
+        // Generate PDF
+        $pdf = PDF::loadView('spd.export-pdf', $data);
+
+        return $pdf->download('rekapan_spd.pdf');
     }
 }

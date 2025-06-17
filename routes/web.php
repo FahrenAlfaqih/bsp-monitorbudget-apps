@@ -51,7 +51,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/spd/{spd}/update-status', [SpdController::class, 'editStatus'])->name('spd.editStatus');
     Route::post('/spd/{spd}/update-status', [SpdController::class, 'updateStatus'])->name('spd.updateStatus');
     Route::resource('rancangan', RancanganAnggaranController::class);
+    Route::get('dpd/export-pdf', [DpdController::class, 'exportToPDF'])->name('dpd.export-pdf');
     Route::resource('dpd', DpdController::class);
+    Route::get('spd/export-pdf', [SpdController::class, 'exportToPDF'])->name('spd.export-pdf');
     Route::resource('spd', SpdController::class);
 });
 

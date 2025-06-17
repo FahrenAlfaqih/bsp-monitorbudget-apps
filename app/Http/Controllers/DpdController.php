@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class DpdController extends Controller
@@ -65,7 +66,7 @@ class DpdController extends Controller
                 'spd.id as spd_id'
             );
 
-        
+
         if ($user->role === 'admindept') {
             if ($departemen) {
                 $query->where('departemen.id', $departemen->id);
@@ -149,5 +150,51 @@ class DpdController extends Controller
         $deklarasi->delete();
 
         return redirect()->route('dpd.index')->with('success', 'Deklarasi perjalanan dinas berhasil dihapus.');
+    }
+
+    public function exportToPDF(Request $request)
+    {
+        $query = DB::table('deklarasi_perjalanan_dinas')
+            ->join('surat_perjalanan_dinas as spd', 'deklarasi_perjalanan_dinas.spd_id', '=', 'spd.id')
+            ->join('departemen', 'spd.departemen_id', '=', 'departemen.id')
+            ->select(
+                'deklarasi_perjalanan_dinas.*',
+                'spd.nomor_spd',
+                'spd.nama_pegawai',
+                'spd.tanggal_berangkat',
+                'departemen.nama as departemen_nama',
+                'spd.id as spd_id'
+            );
+
+        // Filter berdasarkan input user
+        if ($request->filled('nama_pegawai')) {
+            $query->where('spd.nama_pegawai', 'like', '%' . $request->nama_pegawai . '%');
+        }
+        if ($request->filled('departemen')) {
+            $query->where('departemen.id', $request->departemen);
+        }
+        if ($request->filled('tanggal_deklarasi')) {
+            $query->where('deklarasi_perjalanan_dinas.tanggal_deklarasi', $request->tanggal_deklarasi);
+        }
+        if ($request->filled('tgl_dinas_awal') && $request->filled('tgl_dinas_akhir')) {
+            $query->whereBetween('spd.tanggal_berangkat', [$request->tgl_dinas_awal, $request->tgl_dinas_akhir]);
+        } elseif ($request->filled('tgl_dinas_awal')) {
+            $query->where('spd.tanggal_berangkat', '>=', $request->tgl_dinas_awal);
+        }
+
+        $deklarasi = $query->get();
+
+        // Hitung total biaya dari keseluruhan data yang dicetak
+        $totalBiaya = $deklarasi->sum('total_biaya');
+
+        $data = [
+            'deklarasi' => $deklarasi,
+            'filters' => $request->all(),
+            'totalBiaya' => $totalBiaya,  // Kirimkan total biaya ke view
+        ];
+
+        $pdf = PDF::loadView('dpd.export-pdf', $data);
+
+        return $pdf->download('rekapan_dpd.pdf');
     }
 }

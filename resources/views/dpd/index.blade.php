@@ -75,6 +75,11 @@
                         <i class="fas fa-filter mr-1"></i> Filter
                     </button>
 
+                    <a href="{{ route('dpd.export-pdf', request()->query()) }}"
+                        class="mt-5 text-sm px-4 py-2 border ml-4 border-red-500 text-red-600 rounded-lg shadow-sm transition hover:bg-red-50 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-400">
+                        <i class="fas fa-file-pdf mr-1"></i> Cetak PDF
+                    </a>
+
                     <a href="{{ route('dpd.index') }}"
                         class="mt-5 text-sm px-4 py-2 ml-4 border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
                         <i class="fas fa-sync-alt mr-1"></i> Reload
@@ -122,7 +127,7 @@
                             <td class="py-3 px-4 text-sm">{{ $dpd->uraian ?? 'N/A' }}</td>
                             <td class="py-3 px-4 text-sm">
                                 <a href="{{ route('dpd.show', $dpd->id) }}" class="text-blue-600 hover:text-blue-800 font-medium">
-                                    Detail 
+                                    Detail
                                 </a>
                             </td>
 
