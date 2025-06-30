@@ -6,7 +6,7 @@
         <div class="bg-gray-200 text-gray-800 p-4 mb-6 rounded-lg border border-gray-300">
             <h3 class="font-semibold mb-2">Panduan Penambahan Departemen</h3>
             <ul class="list-disc list-inside text-sm space-y-1 ml-5">
-                <li><strong>Nama Departemen:</strong> Masukkan nama departemen dengan format yang jelas. Contoh: <em>Periode Anggaran 2025</em>.</li>
+                <li><strong>Nama Departemen:</strong> Masukkan nama departemen dengan format yang jelas. </li>
                 <li><strong>Nomor BS:</strong> Isikan nomor pengelompokan departemen sesuai struktur organisasi. Contoh: <em>4</em>, <em>6</em>, <em>8</em>.</li>
                 <li><strong>Email:</strong> Gunakan alamat email resmi departemen. Akun ini akan digunakan untuk login ke sistem, default (namadept@admindept.com).</li>
                 <li><strong>Password:</strong> Buatlah password yang kuat minimal 8 karakter. Password ini akan digunakan oleh departemen untuk login.</li>

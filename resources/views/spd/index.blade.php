@@ -80,7 +80,7 @@
 
 
                 <div>
-                    <button type="submit"
+                    <button type="submit" wa
                         class="mt-5 text-sm px-4 py-2 border border-blue-500 text-blue-600 rounded-lg shadow-sm transition hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
                         <i class="fas fa-filter mr-1"></i> Filter
                     </button>
@@ -174,14 +174,13 @@
                                     <a href="{{ route('spd.show', $spd->id) }}" class="text-green-600 hover:text-green-800 font-medium">
                                         Detail
                                     </a>
-
+                                    @if(auth()->user()->role === 'admindept_hcm')
                                     @if($spd->status !== 'disetujui' || $spd->status === 'diajukan')
                                     <a href="{{ route('spd.edit', $spd->id) }}" class="text-blue-600 hover:text-blue-800 font-medium">
                                         Edit
                                     </a>
                                     @endif
-
-
+                                    @endif
 
                                 </td>
 
