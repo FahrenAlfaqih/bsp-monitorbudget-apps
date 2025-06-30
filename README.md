@@ -1,66 +1,84 @@
-# 📊 Sistem Pengelola Anggaran Perjalanan Dinas
+# 📊 Business Travel Budget Management System
 
-Sistem ini dikembangkan untuk membantu Departemen HCM dalam memonitor dan merekap anggaran perjalanan dinas (SPD) serta DPD (Deklarasi Perjalanan Dinas). Sistem ini memungkinkan pengelolaan data perjalanan dinas, status pengajuan, penerbitan DPD dari Finance, dan pembuatan laporan Excel untuk keperluan rekapitulasi.
+This system is designed to assist the HCM Department in monitoring and managing the travel budget for official business trips (**SPD**) and declaration reports (**DPD**). It provides functionalities to track submissions, DPD issuance by Finance, and export reports for financial recaps.
 
-## 🎯 Tujuan Sistem
+---
 
--   Memantau realisasi anggaran perjalanan dinas tiap departemen
--   Mempermudah proses rekapitulasi dan pelaporan DPD
--   Mengurangi kesalahan input dan perhitungan manual
--   Menyediakan informasi status SPD dan DPD secara real-time
+## 🎯 Objectives
 
-## 🧪 Contoh Alur Kerja
+- Monitor the realization of travel budgets per department
+- Simplify the DPD recap and reporting process
+- Minimize manual entry errors and miscalculations
+- Provide real-time status visibility of SPD and DPD workflows
 
--   Admin HCM login ke dalam sistem
--   Kelola data departemen dan data pegawai
--   Membuat rekapan SPD yang akan diajukan
--   Mengajukan SPD
--   Admin FINEC menyetujuiu/menolak pengajuan, jika ditolak maka menerbitkan dpd dan jika tidak status spd menjadi ditolak dan bisa diajukan kembbali
--   Setelah DPD terbit, pada setiap dashboard admin Departemen akan muncul data statistik karyawan yang melaksanakan dinas.
+---
 
-## 🧩 Fitur Utama
+## 🧪 Workflow Example
 
--   Login sistem untuk admin HCM, admin departemen, Technical Manager HCM
--   Manajemen data SPD (tambah, ubah, filter)
--   Monitoring sisa anggaran tiap departemen
--   Peringatan otomatis jika melebihi anggaran
--   Dashboard status pengajuan dan pelaporan
+1. HCM admin logs into the system  
+2. Manage department and employee data  
+3. Create SPD records and submit travel requests  
+4. FINEC admin approves/rejects requests  
+   - If **approved**, DPD is issued  
+   - If **rejected**, status is updated and SPD can be revised/resubmitted  
+5. Once DPD is issued, department dashboards display employee travel statistics
 
-## 🔧 Teknologi yang Digunakan
+---
 
--   Laravel 10 (PHP Framework)
--   MySQL / PhpMyadmin
--   Tailwind CSS + SweetAlert2 (Frontend UI)
--   Laravel Excel (untuk ekspor data ke format excel)
--   doompdf (untuk ekspor data ke format pdf)
+## 🧩 Key Features
 
-## 🛠️ Instalasi dan Konfigurasi
+- 🔐 Role-based login for HCM Admin, Department Admins, and Technical Manager
+- 📋 Manage SPD records (add, edit, filter by department/date/status)
+- 📊 Budget tracking with real-time remaining balance per department
+- 🚨 Auto alerts for over-budget submissions
+- 📈 Dynamic dashboards with submission stats and exportable reports
 
-1. Clone project:
+---
 
-    ```bash
-    git clone https://github.com/FahrenAlFaqih/bsp-final-project.git
-    cd bsp-final-project
+## 🔧 Technology Stack
 
-    ```
+| Layer     | Tech Used                            |
+|-----------|---------------------------------------|
+| Backend   | Laravel 10 (PHP Framework)            |
+| Database  | MySQL + PhpMyAdmin                    |
+| Frontend  | Tailwind CSS, SweetAlert2             |
+| Export    | Laravel Excel (XLSX), DomPDF (PDF)    |
+| Build Tool| Vite, NPM                             |
 
-2. composer install
-3. cp .env.example .env
-4. php artisan migrate
-5. php artisan db:seed
-6. php artisan serve (terminal)
-7. npm run build (git bash)
-8. npm install && npm run dev (git bash)
+---
 
-## 🧑‍💼 Role Pengguna
+## 🛠️ Installation & Setup
 
-Admin HCM: mengelola data departemen, pegawai, spd dan dpd
-Admin FINEC : menerbitkan DPD,
-Technical Manager HCM : mengelola periode pengajuan anggaran, mengelola rancangan anggaran perjalanan dinas
-Admin Departemen selain HCM dan FINEC : melakukan rancangan anggaran perjalanan dinas, melihat spd dan dpd per departemen
+```bash
+# 1. Clone the repository
+git clone https://github.com/FahrenAlFaqih/bsp-final-project.git
+cd bsp-final-project
 
-(Optional) Viewer: hanya melihat laporan dan grafik
+# 2. Install dependencies
+composer install
 
-## 📜 Lisensi
+# 3. Create environment config
+cp .env.example .env
 
-Proyek ini dikembangkan untuk kebutuhan internal PT. Bumi Siak Pusako. Tidak diperkenankan mendistribusikan ulang tanpa izin resmi.
+# 4. Run database migrations and seeders
+php artisan migrate
+php artisan db:seed
+
+# 5. Start development server
+php artisan serve
+
+# 6. Build frontend assets
+npm install && npm run dev
+```
+
+## 👥 User Roles
+| Role                    | Access & Responsibilities                                  |
+| ----------------------- | ---------------------------------------------------------- |
+| 🧑‍💼 HCM Admin         | Manage departments, employees, SPD, DPD                    |
+| 🧾 FINEC Admin          | Approve/reject SPD and issue DPD                           |
+| 🧑‍🔧 Tech Manager HCM  | Manage submission periods and travel budget plans          |
+| 🏢 Dept. Admin (Others) | Draft travel budgets, monitor SPD/DPD for their department |
+| 👁️ Viewer (Optional)   | View-only access to reports and analytics dashboards       |
+
+## 📜 License
+This project is developed exclusively for internal use at PT. Bumi Siak Pusako. Redistribution or public deployment is prohibited without formal approval.
